@@ -1,3 +1,4 @@
+import matplotlib.pyplot
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import PercentFormatter
@@ -5,18 +6,192 @@ from matplotlib.ticker import PercentFormatter
 class plotter:
     def __init__(self, directory):
         self.directory= directory
+        self.colors=['firebrick', 'cornflowerblue', 'goldenrod', 'forestgreen', 'darkmagenta', 'black', 'yellow' ]
+        self.colors=["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]
+        self.linestyles = ['dotted', 'dashed', 'dashdot', (0, (3, 5, 1, 5, 1, 5)), 'solid', '--', 'dotted']
+        self.font_size =13
 
-    def plot_tour_map(self, sensors_json, tour, num_tour, distance):
+    def plot_metrics_with_all_solutions_real_dataset(self, metric, drone_energy_capacity_list, avgs):
+        plt.figure()
+        plt.rcParams.update({'font.size': self.font_size})
+        x = drone_energy_capacity_list
+        keys = list(avgs.keys())
+        for i in range(len(keys)):
+            #plt.plot(x, avgs[keys[i]], label=keys[i], color=self.colors[i], linestyle=self.linestyles[i])
+            # if keys[i] == 'baseline_ml' or keys[i] == 'mysolu':
+            plt.plot(x, avgs[keys[i]], label=keys[i], color=self.colors[i], linestyle=self.linestyles[i])
+
+        plt.xlabel("Budget of drone capabilities (J)")
+        plt.ylabel(metric)
+        plt.legend()
+        plt.savefig(self.directory + '%s.png' % (metric), format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_metrics_with_all_solutions_exp2(self, metric,training_dataset_size_list, avgs, stds):
+        plt.figure()
+        plt.rcParams.update({'font.size': self.font_size})
+        x = training_dataset_size_list
+        keys = list(avgs.keys())
+        for i in range(len(keys)):
+            #if keys[i]=='baseline_ml' or keys[i] =='mysolu':
+            plt.errorbar(x, avgs[keys[i]], stds[keys[i]], label=keys[i], color=self.colors[i],
+                             linestyle=self.linestyles[i], elinewidth=1, capsize=5, capthick=1)
+
+        plt.xlabel("size of training dataset")
+        plt.ylabel(metric)
+        plt.legend()
+        plt.savefig(self.directory + '%s.png' % (metric), format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_metrics_with_all_solutions(self, metric, drone_energy_capacity_list, avgs, stds):
+        plt.figure()
+        plt.rcParams.update({'font.size': self.font_size})
+        x=drone_energy_capacity_list
+        keys=list(avgs.keys())
+        for i in range(len(keys)):
+           plt.errorbar(x, avgs[keys[i]], stds[keys[i]], label=keys[i], color=self.colors[i], linestyle=self.linestyles[i], elinewidth = 1, capsize = 5, capthick = 1, errorevery=3)
+
+        plt.xlabel("Budget of drone capabilities (J)")
+        plt.ylabel(metric)
+        plt.legend()
+        plt.savefig(self.directory + '%s.png' %(metric), format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_averaged_mse_vary_training_dataset_size_with_expected_value(self, num_of_training_dataset_size_list,
+                                                                     averaged_mse_varying_traing_dataset_size,
+                                                                     expected_mse_list):
+        plt.figure()
+        plt.plot(num_of_training_dataset_size_list, averaged_mse_varying_traing_dataset_size)
+        plt.xlabel("size of the training dataset")
+        plt.ylabel("MSE")
+        plt.savefig(self.directory + 'mse_varying_training_dataset_size.png', format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_averaged_mse_vary_training_dataset_size(self, num_of_training_dataset_size_list,
+                                                 averaged_mse_varying_training_dataset_size):
+
+        plt.figure()
+        plt.plot(num_of_training_dataset_size_list, averaged_mse_varying_training_dataset_size)
+        plt.xlabel("size of the training dataset")
+        plt.ylabel("MSE")
+        plt.savefig(self.directory + 'mse_varying_training_dataset_size.png', format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_selected_sensors_varying_training_dataset_size(self, num_of_training_dataset_size_list, num_of_selected_nodes):
+        plt.figure()
+        plt.plot(num_of_training_dataset_size_list, num_of_selected_nodes)
+        plt.xlabel("size of the training dataset")
+        plt.ylabel("# of observation sensors")
+        plt.savefig(self.directory + 'number of observation sensors with varying training dataset size.png', format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_tour_length_varying_training_dataset_size(self, num_of_training_dataset_size_list, optimal_dis_list):
+        plt.figure()
+        plt.plot(num_of_training_dataset_size_list, optimal_dis_list)
+        plt.xlabel("size of the training dataset")
+        plt.ylabel("tour distance")
+        plt.savefig(self.directory + 'tour distance varying training dataset size.png',
+                    format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_energy_cost_varying_training_dataset_size(self, num_of_training_dataset_size_list, optimal_energy_cost_list):
+        plt.figure()
+        plt.plot(num_of_training_dataset_size_list, optimal_energy_cost_list)
+        plt.xlabel("size of the training dataset")
+        plt.ylabel("energy cost of the tour")
+        plt.savefig(self.directory + 'energy cost varying the training dataset size.png',
+                    format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_mse_with_varying_drone_capabilities(self, drone_capability_list, mse_list):
+        plt.figure()
+        plt.plot(drone_capability_list, mse_list)
+        plt.xlabel("Budget of drone capabilities (J)")
+        plt.ylabel("MSE ")
+        plt.savefig(self.directory + 'mse_varying_drone_capabilities.png', format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+
+
+    def plot_mse_with_varying_drone_cap_for_different_ML_models_with_correlation_based(self, total_dist_list, ML_mes_along_distance_for_variable_models, results_inference_only,
+                                            results_distance_only, results_both, mse_feature_selection_for_GBR_model, mse_feature_selection_of_GBR_model_baseline2, mse_feature_selection_baseline2_linear_regression, scale):
+        ML_models=['GBR', 'SVM', 'LR', 'RFR']
+        plt.figure()
+        for i in range(len(ML_models)):
+            plt.plot(total_dist_list, np.array(ML_mes_along_distance_for_variable_models)[:,i], label=ML_models[i], color=self.colors[i],
+                     linestyle=self.linestyles[i])
+        plt.plot(total_dist_list, results_inference_only, label='inference only', color=self.colors[i+1],
+                 linestyle=self.linestyles[i+1])
+        plt.plot(total_dist_list, results_distance_only, label='distance only', color=self.colors[i+2],
+                 linestyle=self.linestyles[i+2])
+        plt.plot(total_dist_list, results_both, label='both', color=self.colors[i+3],
+                 linestyle=self.linestyles[i+3])
+        plt.plot(total_dist_list, mse_feature_selection_for_GBR_model, label='FS_GBR_feature_importance', color=self.colors[i+4])
+        plt.plot(total_dist_list, mse_feature_selection_of_GBR_model_baseline2, label='FS_GBR', color=self.colors[i+5])
+        plt.plot(total_dist_list, mse_feature_selection_baseline2_linear_regression, label="FS_lR", color=self.colors[i+6])
+        plt.xlabel("Budget of drone capabilities (m)")
+        plt.ylabel("MSE")
+        plt.legend()
+        if scale =="raw":
+            plt.savefig(self.directory + "mse_for_various_ML_model_and_data_correlation_raw.png", format="PNG",
+                        bbox_inches='tight')
+        elif scale=="log":
+            plt.savefig(self.directory + "mse_for_various_ML_model_and_data_correlation_log.png", format="PNG",
+                            bbox_inches='tight')
+        plt.close()
+
+    def plot_mse_with_varying_drone_cap_for_different_ML_models(self, total_dist_list, mes_along_distance_for_variable_models):
+        ML_models=['GBR', 'SVM', 'LR', 'RFR']
+        plt.figure()
+        for i in range(len(ML_models)):
+            plt.plot(total_dist_list, np.array(mes_along_distance_for_variable_models)[:,i], label=ML_models[i], color=self.colors[i],
+                     linestyle=self.linestyles[i])
+        plt.xlabel("Budget of drone capabilities (m)")
+        plt.ylabel("MSE")
+        plt.legend()
+        plt.savefig(self.directory + "mse_for_various_ML_model.png", format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+
+    def plot_comparison_vary_drone_capability(self, total_dist_list, results_inference_only,
+                                            results_distance_only,results_both, ylabel, figure_name):
+        plt.figure()
+        plt.plot(total_dist_list, results_inference_only, label='inference only', color=self.colors[0],
+                 linestyle=self.linestyles[0])
+        plt.plot(total_dist_list, results_distance_only, label='distance only', color=self.colors[2],
+                 linestyle=self.linestyles[2])
+        plt.plot(total_dist_list, results_both, label='both', color=self.colors[1],
+                 linestyle=self.linestyles[1])
+        plt.xlabel("Budget of drone capabilities (m)")
+        plt.ylabel(ylabel)
+        plt.legend()
+        plt.savefig(self.directory + figure_name, format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_tour_map(self, sensors_json, tour, num_tour, distance, energy_cost):
         plt.figure()
         x=[]
         y=[]
         for sensor in sensors_json:
             x_0=sensors_json[sensor]['Easting']
-            x.append(x_0)
             y_0=sensors_json[sensor]['Northing']
-            y.append(y_0)
+            if sensor=='Depot':
+                plt.scatter(x_0, y_0, color='red')
+            else:
+                x.append(x_0)
+                y.append(y_0)
         plt.scatter(x, y)
-        plt.scatter(0, 500, color='red')
         for sensor in sensors_json:
             plt.text(sensors_json[sensor]['Easting'], sensors_json[sensor]['Northing'], sensor, va='bottom')
 
@@ -42,7 +217,7 @@ class plotter:
                      xytext=(start_x, start_y), textcoords='data',
                      arrowprops=dict(arrowstyle="<-",
                                      connectionstyle="arc3"))
-        textstr = "Tour %d\nN nodes: %d\nLength: %.3f" % (num_tour,len(tour), distance)
+        textstr = "Tour %d\nN nodes: %d\nLength: %.3f\nEnergy cost: %.3f" % (num_tour,len(tour), distance, energy_cost)
         props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
         plt.text(650, 630, textstr, fontsize=10,  # Textbox
                    verticalalignment='top', bbox=props)
@@ -60,6 +235,16 @@ class plotter:
                     bbox_inches='tight')
         plt.close()
 
+    def plot_energy_cost_vary_drone_capability(self, drone_capacity_list, optimal_energy_cost_list):
+        plt.figure()
+        plt.plot(drone_capacity_list, optimal_energy_cost_list)
+        plt.xlabel("Budget of drone energy capabilities (m)")
+        plt.ylabel("energy cost of the tour (m)")
+        plt.savefig(self.directory + 'energy cost of the tour with varying drone capabilities.png', format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+
     def plot_selected_sensors_vary_drone_capability(self, total_dist_list, num_of_selected_nodes):
         plt.figure()
         plt.plot(total_dist_list, num_of_selected_nodes)
@@ -69,17 +254,18 @@ class plotter:
                     bbox_inches='tight')
         plt.close()
 
-    def plot_sensor_map(self,coordinates,nodes):
+    def plot_sensor_map(self, coordinates,nodes, name):
         x, y = zip(*coordinates)
         plt.figure()
         plt.scatter(x, y)
         # plt.scatter(0, 0, color='red')
         for i in range(len(nodes)):
             plt.text(x[i], y[i], nodes[i], va='bottom')
-        plt.scatter(0, 500, color='red')
+            if nodes[i] == 'Depot':
+                plt.scatter(x[i], y[i], color='red')
         plt.xlabel('Relative Easting (m)')
         plt.ylabel('Relative Easting (m)')
-        plt.savefig(self.directory + 'sensor_map.png', format="PNG",
+        plt.savefig('%s.png' %(name), format="PNG",
                     bbox_inches='tight')
 
     def plot_distance_varying_sensors(self,num_sensor_list, opt_dists):
@@ -90,7 +276,8 @@ class plotter:
         plt.savefig(self.directory + 'drone distance with varying sensors.png', format="PNG",
                     bbox_inches='tight')
         plt.close()
-    def plot_averaged_mse_vary_drone_capability(self, total_dist_list,averaged_mse_varying_drone_capabilities, expected_mse_list ):
+
+    def plot_averaged_mse_vary_drone_capability(self, total_dist_list,averaged_mse_varying_drone_capabilities, expected_mse_list):
         plt.figure()
         colors = ['firebrick', 'cornflowerblue', 'goldenrod', 'forestgreen', 'darkmagenta']
         linestyles = ['dotted', 'dashed', 'dashdot', (0, (3, 5, 1, 5, 1, 5)), 'solid']
@@ -99,7 +286,19 @@ class plotter:
         plt.xlabel("Budget of drone capabilities (m)")
         plt.ylabel("averaged MSE of inference (m\u00b3/m\u00b3)")
         plt.legend()
-        plt.savefig(self.directory + 'inference error with varying drone capabilities.png', format="PNG", bbox_inches='tight')
+        plt.savefig(self.directory + 'mse_varying_drone_capabilities.png', format="PNG", bbox_inches='tight')
+        plt.close()
+
+    def plot_averaged_mse_vary_drone_capability_varying_method(self, total_dist_list,averaged_mse_varying_drone_capabilities, expected_mse_list, method):
+        plt.figure()
+        colors = ['firebrick', 'cornflowerblue', 'goldenrod', 'forestgreen', 'darkmagenta']
+        linestyles = ['dotted', 'dashed', 'dashdot', (0, (3, 5, 1, 5, 1, 5)), 'solid']
+        plt.plot(total_dist_list, averaged_mse_varying_drone_capabilities, label='inference error', color=colors[0], linestyle=linestyles[0])
+        plt.plot(total_dist_list, expected_mse_list, label='expected error', color=colors[1], linestyle=linestyles[1] )
+        plt.xlabel("Budget of drone capabilities (m)")
+        plt.ylabel("averaged MSE of inference (m\u00b3/m\u00b3)")
+        plt.legend()
+        plt.savefig(self.directory + 'inference error with varying drone capabilities_%s.png' %(method), format="PNG", bbox_inches='tight')
         plt.close()
 
     def plot_cummulative_probability(self, array, plotname):
@@ -229,398 +428,4 @@ class plotter:
         # plt.grid(True)
         plt.savefig(self.directory + "expected_MSE_of_VW_Inference_2015_Jan_April_with_sensor_num_as_budget_synthetic_heu.png",
                     bbox_inches='tight')
-        plt.close()
-
-
-    def plot_edge_delay_difference_alongtime(self, s,e, edge_delay_difference_list,link_range):
-        # set width of bar
-        barWidth = 0.25
-        fig = plt.subplots()
-        # set height of bar
-        init= edge_delay_difference_list[0][s:e]
-        t1000 = edge_delay_difference_list[1][s:e]
-        t2000 = edge_delay_difference_list[2][s:e]
-        t3000= edge_delay_difference_list[3][s:e]
-        # Set position of bar on X axis
-        br1 = np.arange(e-s)
-        br2 = [x + barWidth for x in br1]
-        br3 = [x + barWidth for x in br2]
-        br4 = [x + barWidth for x in br3]
-        # Make the plot
-        plt.bar(br1, init, color='r', width=barWidth,
-                edgecolor='grey', label='init')
-        plt.bar(br2, t1000, color='g', width=barWidth,
-                edgecolor='grey', label='t1000')
-        plt.bar(br3, t2000, color='b', width=barWidth,
-                edgecolor='grey', label='t2000')
-        plt.bar(br4, t3000, color='c', width=barWidth,
-                edgecolor='grey', label='t3000')
-
-        # Adding Xticks
-        xlable=[x for x in range(s,e)]
-        plt.xlabel('linkID', fontweight='bold', fontsize=15)
-        plt.ylabel('delay difference from the mean', fontweight='bold', fontsize=15)
-        plt.xticks([r for r in range(e-s)], range(s,e,1))
-        plt.legend()
-        plt.savefig(self.directory + 'delay difference from the mean link %s' %link_range, format="PNG")
-        plt.close()
-
-
-
-    def plot_total_edge_delay_mse_with_increasing_monitor_training_from_file(self, monitors_deployment_percentage, filename):
-        labels = []
-        for per in monitors_deployment_percentage:
-            labels.append(str(per) + '%')
-        #line_num=len(total_edge_mse_list_with_increasing_monitors)
-        total_edge_mse_list_with_increasing_monitors=np.loadtxt(filename, dtype=float)
-        x=range(len(total_edge_mse_list_with_increasing_monitors[0]))
-        #x = range(len(total_edge_mse_list_with_increasing_monitors))
-        fig = plt.figure()
-        plt.rcParams.update({'font.size': 13})
-
-        colors=['firebrick', 'cornflowerblue', 'goldenrod', 'forestgreen', 'darkmagenta']
-        linestyles = ['dotted','dashed', 'dashdot', (0, (3, 5, 1, 5, 1, 5)),'solid']
-        for i in range (len(total_edge_mse_list_with_increasing_monitors)):
-            plt.plot(x, total_edge_mse_list_with_increasing_monitors[i], label=labels[i], color=colors[i], linestyle= linestyles[i])
-        plt.xlabel("learning time")
-        plt.ylabel("MSE of link delay during learning")
-        plt.legend(fontsize=13)
-        #plt.grid(True)
-        plt.savefig(self.directory + "MSE_of_total_links_delay_with_increasing_monitor_training")
-        plt.close()
-
-    def plot_NT_verification_edge_computed_rate_with_monitors_increasing(self, G, monitors_list, solved_edges_count ):
-        plt.figure()
-        x = [len(monitors) / len(G.nodes) for monitors in monitors_list]
-        y = [edges_count / len(G.edges) for edges_count in solved_edges_count]
-        #print(x, y)
-        plt.plot(x, y)
-        plt.xlabel("% of nodes selected as monitors")
-        plt.ylabel("% of solved links")
-        # plt.show()
-        plt.savefig('plots/network_tomography_verification_node%s_with_link_weight=1.png'%(len(G.nodes)))
-        plt.close()
-
-    def plot_rewards_mse_along_with_different_monitors(self,monitors_deployment_percentage,total_rewards_mse_list):
-        labels=[]
-        for per in monitors_deployment_percentage:
-            labels.append(str(per)+'%')
-        line_num = len(total_rewards_mse_list)
-        x = range(len(total_rewards_mse_list[0]))
-        fig = plt.figure(figsize=(10, 7))
-        for i in range(line_num):
-            plt.plot(x, total_rewards_mse_list[i], label=labels[i])
-        plt.xlabel("time")
-        plt.ylabel("mse of time averaged rewards of the selected optimal paths during training")
-        plt.legend()
-        plt.savefig(self.directory + "rewards mse with different #minitors")
-        plt.close()
-
-    def plot_edge_exporation_times_with_differrent_monitor_size(self, G, total_edge_exploration_during_training_list):
-            edges_num = len(G.edges)
-            index = range(0, edges_num)
-            # index.sort()
-            selected_edges_list = []
-            for i in range(len(total_edge_exploration_during_training_list)):
-                list = total_edge_exploration_during_training_list[i]
-                selected_edges_list.append([list[index[j]] for j in range(len(index))])
-
-            fig = plt.figure()
-            ax = fig.add_subplot(111)
-            # Multiple bar chart
-            x = ['0.1', '0.2', '0.3', '0.4','0.5']
-            index = [str(index[i]) for i in range(len(index))]
-            for i in range(len(total_edge_exploration_during_training_list)):
-                ax.bar(index, selected_edges_list[i], width=0.55, align='center', label=x[i])
-            # Define x-ticks
-            # ticks=[str(index[i]) for i in range(len(index))]
-            # plt.xticks(index, ticks)
-            # Layout and Display
-            plt.xlabel("LinkID")
-            plt.ylabel("total explored time during MAB training ")
-            plt.tight_layout()
-            plt.legend()
-            plt.savefig(self.directory + " the exploration times of 20 random edges with different monitor numbers")
-            plt.close()
-
-    def plot_edge_computed_rate_during_training(self,monitors_deployment_percentage,average_computed_edge_rate_during_training):
-        x = []
-        for per in monitors_deployment_percentage:
-            x.append(str(per))
-        y = average_computed_edge_rate_during_training
-        fig = plt.figure(figsize=(10, 7))
-        barwidth = 0.25
-        plt.xlabel("% of nodes selected as monitors")
-        plt.ylabel("% of computed edges")
-        bar = np.array(x)
-        plt.bar(bar, y, width=barwidth)
-        plt.savefig(self.directory + 'MAB_edge_computed_rate_with_increasing_monitors.png')
-        plt.close()
-
-    def plot_edge_computed_rate_with_different_topology_size(self):
-        percentage = ['0.1', '0.2', '0.3', '0.4', '0.5','0.6','0.7','0.8','0.9','1.0']
-        edge_comput_rate_20nodes=[0.0, 0.05796490043874452, 0.10419244759440507, 0.11742978212772341, 0.2896838789515131, 0.3347301908726141, 0.5024843439457007, 0.7434657066786665,0.7759215509806128, 0.8975794052574343]
-        edge_compute_number_50nodes=[1.256631071305546,6.163623837409577,20.436445056837755,30.779193937306236,43.56286600068894,64.29968997588702,64.19910437478471,73.87599035480537,81.72959007922839, 79.74061315880124]
-        edge_compute_rate_50nodes=[x/96 for x in edge_compute_number_50nodes]
-        barWidth = 0.25
-        fig = plt.subplots()
-        # set height of bar
-        nodes_20 = edge_comput_rate_20nodes
-        nodes_50 = edge_compute_rate_50nodes
-        # Set position of bar on X axis
-        br1 = np.arange(len(percentage))
-        br2 = [x + barWidth for x in br1]
-
-        # Make the plot
-        plt.bar(br1, nodes_20, color='r', width=barWidth,
-                edgecolor='grey', label='20 nodes')
-        plt.bar(br2, nodes_50, color='g', width=barWidth,
-                edgecolor='grey', label='50 nodes')
-
-        # Adding Xticks
-        plt.xlabel('%of nodes selected as monitors',  fontsize=15)
-        plt.ylabel('%of the identified links',  fontsize=15)
-        plt.xticks(np.arange(len(percentage)),percentage)
-        plt.legend()
-        plt.savefig(self.directory + '%of identified edges with different topology size and different number of monitors' , format="PNG")
-        plt.close()
-
-    def plot_average_regrets(self, averaged_regret_list):
-        plt.figure()
-        x = range(len(averaged_regret_list))
-        plt.plot(x, averaged_regret_list)
-        plt.xlabel("time")
-        plt.ylabel("averaged regret of selected shortest path among monitors")
-        plt.savefig(self.directory + 'averaged regret', format="PNG")
-        plt.close()
-
-    def plot_rate_of_correct_shortest_path(self, correct_shortest_path_selected_rate):
-        plt.figure()
-        x = range(len(correct_shortest_path_selected_rate))
-        plt.plot(x, correct_shortest_path_selected_rate)
-        plt.xlabel("time")
-        plt.ylabel("rate of correctly selected shortest path among monitors")
-        plt.savefig(self.directory + 'rate of correctly selected shortest path among monitors', format="PNG")
-        plt.close()
-
-    def plot_edge_delay_difference_for_some_edges(self, optimal_edges_delay_difference_after_inti,
-                                                  optimal_edges_delay_difference_after_training):
-        barWidth = 0.25
-        fig = plt.subplots()
-        # set height of bar
-        init = optimal_edges_delay_difference_after_inti
-        after_training = optimal_edges_delay_difference_after_training
-        br1 = np.arange(len(init))
-        br2 = [x + barWidth for x in br1]
-        # Make the plot
-        plt.bar(br1, init, color='r', width=barWidth,
-                edgecolor='grey', label='after_init')
-        plt.bar(br2, after_training, color='g', width=barWidth,
-                edgecolor='grey', label='after_training')
-
-        # Adding Xticks
-        xlable = np.arange(len(init))
-        plt.xlabel('linkID', fontweight='bold', fontsize=15)
-        plt.ylabel('delay difference from the mean', fontweight='bold', fontsize=15)
-        plt.xticks(xlable)
-        plt.legend()
-        plt.savefig(self.directory + 'delay difference of optimal edges from mean after init and after training')
-        plt.close()
-
-    def plot_diff_from_optimal_path_of_selected_shortest_paths(self, abs_diff_of_delay_from_optimal):
-        plt.figure()
-        x = range(len(abs_diff_of_delay_from_optimal))
-        plt.plot(x, abs_diff_of_delay_from_optimal)
-        plt.xlabel("time")
-        plt.ylabel("mse of the selected shortest path from optimal shortest path")
-        plt.savefig(self.directory + 'absolute difference of the selected shortest path from optimal shortest path', format="PNG")
-        plt.close()
-
-    def plot_optimal_path_selected_percentage_list_with_increasing_monitors(self, monitors_deployment_percentage, optimal_path_selected_rate):
-        x=monitors_deployment_percentage
-        x_label = [str(pert) for pert in monitors_deployment_percentage]
-        y = optimal_path_selected_rate
-        fig = plt.figure(figsize=(10, 7))
-        barwidth = 0.25
-        plt.xlabel("% of nodes selected as monitors")
-        plt.ylabel(" % of the optimal paths selected")
-        bar = np.arange(len(x_label))
-        plt.bar(bar, y, width=barwidth)
-        plt.xticks(bar,x_label)
-        plt.savefig(self.directory + 'MAB_edge_computed_rate_with_increasing_monitors.png')
-        plt.close()
-
-    def plot_abs_diff_path_delay_from_the_optimal(self, monitors_deployment_percentage, optimal_path_selected_percentage_list):
-        x=monitors_deployment_percentage
-        x_label = [str(pert) for pert in monitors_deployment_percentage]
-        y = optimal_path_selected_percentage_list
-        fig = plt.figure(figsize=(10, 7))
-        barwidth = 0.25
-        plt.xlabel("% of nodes selected as monitors")
-        plt.ylabel(" abs error from the optimal shortest paths")
-        bar = np.arange(len(x_label))
-        plt.bar(bar, y, width=barwidth)
-        plt.xticks(bar, x_label)
-        plt.savefig(self.directory + 'abs error from the optimal shortest paths.png')
-        plt.legend()
-        plt.close()
-
-    def plot_percentage_of_optimal_path_selected_rate_BR_50nodes(self,monitors_deployment_percentage, subito_op_rate, UCB1_op_rate, subito_perfect_op_rate):
-        barWidth = 0.25
-        fig = plt.figure(figsize=(10, 10))
-
-        # set height of bar
-        x=monitors_deployment_percentage
-        x_label = [str(pert) for pert in monitors_deployment_percentage]
-        br1 = np.arange(len(UCB1_op_rate))
-        br2 = [x + barWidth for x in br1]
-        br3= [x + barWidth for x in br2]
-        for i in range(len(UCB1_op_rate)):
-            UCB1_op_rate[i]=UCB1_op_rate[i]*100
-            subito_op_rate[i]=subito_op_rate[i]*100
-            subito_perfect_op_rate[i]=subito_perfect_op_rate[i]*100
-        # Make the plot
-        plt.rcParams.update({'font.size': 30})
-        plt.bar(br1, UCB1_op_rate,  width=barWidth,
-                edgecolor='grey', label='UCB1', hatch='/', color='white')
-        plt.bar(br2,subito_op_rate,  width=barWidth,
-                edgecolor='grey', label='Subito', hatch='o', color='white')
-        plt.bar(br3, subito_perfect_op_rate, width=barWidth,
-                edgecolor='grey', label='Subito*', hatch='*', color='white')
-
-        # Adding Xticks
-        plt.xlabel('% of nodes selected as monitors')
-        plt.ylabel('Rate(%) of expected paths selected')
-        plt.xticks(br1, x_label)
-        plt.legend(fontsize=25, loc='lower left')
-        plt.savefig(self.directory + 'Scability_of Minitor_op_rate')
-        plt.close()
-
-    def plot_abs_delay_of_optimal_path_selected_from_mean_BR_50nodes(self,monitors_deployment_percentage,subito_diff, UCB1_diff, subito_perfect_diff):
-        barWidth = 0.25
-        fig = plt.figure(figsize=(10, 10))
-        # set height of bar
-        x = monitors_deployment_percentage
-        x_label = [str(pert) for pert in monitors_deployment_percentage]
-        br1 = np.arange(len(UCB1_diff))
-        br2 = [x + barWidth for x in br1]
-        br3 = [x + barWidth for x in br2]
-        # Make the plot
-        plt.rcParams.update({'font.size': 30})
-        plt.bar(br1, UCB1_diff,  width=barWidth,
-                edgecolor='grey', label='UCB1', hatch='/', color='white')
-        plt.bar(br2, subito_diff,  width=barWidth,
-                edgecolor='grey', label='Subito', hatch='o', color='white')
-        plt.bar(br3, subito_perfect_diff,  width=barWidth,
-                edgecolor='grey', label='Subito*', hatch='*', color='white')
-
-        # Adding Xticks
-        plt.xlabel('% of nodes selected as monitors')
-        plt.ylabel('Delay difference from expectation ')
-        plt.xticks(br1, x_label)
-        plt.legend(fontsize=25, loc='lower left')
-        plt.savefig(self.directory + "Scability_of Minitor_delay_diff")
-        plt.close()
-
-    def plot_percentage_of_optimal_path_selected_rate_for_various_monitor_size(self, topology_size, subito_op_rate, UCB1_op_rate, subito_perfect_op_rate):
-        barWidth = 0.25
-        fig = plt.figure(figsize=(10, 10))
-        # set height of bar
-        x_label = [str(size) for size in topology_size]
-        br1 = np.arange(len(UCB1_op_rate))
-        br2 = [x + barWidth for x in br1]
-        br3 = [x + barWidth for x in br2]
-        for i in range(len(UCB1_op_rate)):
-            UCB1_op_rate[i] = UCB1_op_rate[i] * 100
-            subito_op_rate[i] = subito_op_rate[i] * 100
-            subito_perfect_op_rate[i] = subito_perfect_op_rate[i] * 100
-        # Make the plot
-        plt.rcParams.update({'font.size': 30})
-        plt.bar(br1, UCB1_op_rate, width=barWidth,
-                edgecolor='grey', label='UCB1', hatch='/')
-        plt.bar(br2, subito_op_rate, width=barWidth,
-                edgecolor='grey', label='Subito', hatch='o')
-        plt.bar(br3, subito_perfect_op_rate, width=barWidth,
-                edgecolor='grey', label='Subito*', hatch='*')
-
-        # Adding Xticks
-        plt.xlabel('network size')
-        plt.ylabel('Rate(%) of expected paths selected')
-        plt.xticks(br1, x_label)
-        plt.legend(fontsize=25, loc='lower left')
-        plt.savefig(self.directory + 'scalability_of_network_size_op_rate')
-        plt.close()
-
-    def plot_abs_delay_of_optimal_path_selected_for_various_monitor_size(self,topology_size, subito_diff, UCB1_diff, subito_perfect_diff):
-        barWidth = 0.25
-        fig = plt.figure(figsize=(10, 10))
-        # set height of bar
-        x_label = [str(size) for size in topology_size]
-        br1 = np.arange(len(UCB1_diff))
-        br2 = [x + barWidth for x in br1]
-        br3 = [x + barWidth for x in br2]
-        # Make the plot
-        plt.rcParams.update({'font.size': 30})
-        plt.bar(br1, UCB1_diff, width=barWidth,
-                edgecolor='grey', label='UCB1', hatch='/')
-        plt.bar(br2, subito_diff, width=barWidth,
-                edgecolor='grey', label='Subito', hatch='o')
-        plt.bar(br3, subito_perfect_diff, width=barWidth,
-                edgecolor='grey', label='Subito*', hatch='*')
-
-        # Adding Xticks
-        plt.xlabel('network size')
-        plt.ylabel('Delay difference from expectation')
-        plt.xticks(br1, x_label)
-        plt.legend(fontsize=25, loc='upper left')
-        plt.savefig(self.directory + 'Scability_of_network_size_delay_diff')
-        plt.close()
-
-
-
-    def plot_percentage_of_optimal_path_selected_rate_BTN(self, monitors_deployment_percentage,myapproach,baseline):
-        barWidth = 0.25
-        fig = plt.subplots()
-        # set height of bar
-        x=monitors_deployment_percentage
-        x_label = [str(pert) for pert in monitors_deployment_percentage]
-        br1 = np.arange(len(baseline))
-        br2 = [x + barWidth for x in br1]
-        for i in range(len(baseline)):
-            baseline[i]=baseline[i]*100
-            myapproach[i]=myapproach[i]*100
-        # Make the plot
-        plt.bar(br1, baseline, color='r', width=barWidth,
-                edgecolor='grey', label='baseline')
-        plt.bar(br2, myapproach, color='g', width=barWidth,
-                edgecolor='grey', label='our approach')
-
-        # Adding Xticks
-        plt.xlabel('% of nodes selected as monitors')
-        plt.ylabel('% of optimal path selected')
-        plt.xticks(br1, x_label)
-        plt.legend()
-        plt.savefig(self.directory + 'average percentage of the optimal shortest path selected rate with 10% - 50% monitors deployed_BTN')
-        plt.close()
-
-    def plot_abs_delay_of_optimal_path_selected_from_mean_BTN(self, monitors_deployment_percentage, myapproach, baseline):
-        barWidth = 0.25
-        fig = plt.subplots()
-        # set height of bar
-        x = monitors_deployment_percentage
-        x_label = [str(pert) for pert in monitors_deployment_percentage]
-        br1 = np.arange(len(baseline))
-        br2 = [x + barWidth for x in br1]
-        # Make the plot
-        plt.bar(br1, baseline, color='r', width=barWidth,
-                edgecolor='grey', label='baseline')
-        plt.bar(br2, myapproach, color='g', width=barWidth,
-                edgecolor='grey', label='our approach')
-
-        # Adding Xticks
-        plt.xlabel('% of nodes selected as monitors')
-        plt.ylabel('avg abs difference of selected shortest paths from real ')
-        plt.xticks(br1, x_label)
-        plt.legend()
-        plt.savefig(self.directory + 'average absolute difference of the selected shortest paths from real optimal paths with 10%-50% monitors deployed_BTN')
         plt.close()

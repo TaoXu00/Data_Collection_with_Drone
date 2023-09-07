@@ -1,0 +1,133 @@
+Path Plan with different drone capabilities
+***************************************************************
+drone_constraint: 0
+0 sensors are selected 
+optimal tour: []
+length of the tour 0.000000
+optimal energy cost 0.000000
+***************************************************************
+drone_constraint: 2000
+0 sensors are selected 
+optimal tour: []
+length of the tour 0.000000
+optimal energy cost 0.000000
+***************************************************************
+drone_constraint: 4000
+1 sensors are selected 
+optimal tour: ['7', 'Depot']
+length of the tour 282.324550
+optimal energy cost 2825.245498
+***************************************************************
+drone_constraint: 6000
+2 sensors are selected 
+optimal tour: ['7', '28', 'Depot']
+length of the tour 516.749914
+optimal energy cost 5237.499139
+***************************************************************
+drone_constraint: 8000
+5 sensors are selected 
+optimal tour: ['7', '18', '20', '26', '28', 'Depot']
+length of the tour 737.342424
+optimal energy cost 7653.424242
+***************************************************************
+drone_constraint: 10000
+7 sensors are selected 
+optimal tour: ['7', '13', '19', '21', '27', '18', '28', 'Depot']
+length of the tour 909.401713
+optimal energy cost 9514.017130
+***************************************************************
+drone_constraint: 12000
+9 sensors are selected 
+optimal tour: ['7', '13', '19', '21', '27', '18', '20', '26', '28', 'Depot']
+length of the tour 1016.223412
+optimal energy cost 10722.234120
+***************************************************************
+drone_constraint: 14000
+10 sensors are selected 
+optimal tour: ['7', '13', '19', '21', '27', '18', '20', '5', '26', '28', 'Depot']
+length of the tour 1139.279519
+optimal energy cost 12022.795191
+***************************************************************
+drone_constraint: 16000
+11 sensors are selected 
+optimal tour: ['7', '13', '19', '21', '6', '27', '18', '20', '5', '26', '28', 'Depot']
+length of the tour 1504.844691
+optimal energy cost 15748.446912
+***************************************************************
+drone_constraint: 18000
+13 sensors are selected 
+optimal tour: ['7', '13', '18', '27', '19', '21', '6', '16', '17', '5', '20', '26', '28', 'Depot']
+length of the tour 1673.800066
+optimal energy cost 17578.000658
+***************************************************************
+drone_constraint: 20000
+13 sensors are selected 
+optimal tour: ['7', '13', '18', '27', '19', '21', '6', '1', '22', '17', '20', '26', '28', 'Depot']
+length of the tour 1909.618807
+optimal energy cost 19936.188074
+***************************************************************
+drone_constraint: 22000
+12 sensors are selected 
+optimal tour: ['7', '13', '19', '21', '16', '22', '8', '17', '26', '20', '18', '28', 'Depot']
+length of the tour 2118.972050
+optimal energy cost 21959.720499
+***************************************************************
+drone_constraint: 24000
+18 sensors are selected 
+optimal tour: ['7', '13', '19', '21', '6', '1', '24', '4', '10', '31', '8', '15', '17', '5', '26', '20', '18', '28', 'Depot']
+length of the tour 2257.836822
+optimal energy cost 23768.368220
+***************************************************************
+drone_constraint: 26000
+22 sensors are selected 
+optimal tour: ['7', '13', '18', '27', '19', '21', '6', '1', '23', '24', '9', '4', '10', '31', '8', '15', '22', '17', '5', '20', '26', '28', 'Depot']
+length of the tour 2438.010566
+optimal energy cost 25850.105662
+***************************************************************
+drone_constraint: 28000
+24 sensors are selected 
+optimal tour: ['7', '13', '18', '27', '19', '21', '6', '12', '23', '24', '9', '4', '10', '31', '8', '15', '22', '1', '16', '17', '5', '20', '26', '28', 'Depot']
+length of the tour 2534.125506
+optimal energy cost 26951.255055
+***************************************************************
+drone_constraint: 30000
+26 sensors are selected 
+optimal tour: ['7', '13', '18', '27', '19', '21', '6', '16', '22', '15', '9', '1', '23', '24', '4', '10', '31', '8', '0', '25', '30', '17', '5', '20', '26', '28', 'Depot']
+length of the tour 2823.816486
+optimal energy cost 29988.164857
+***************************************************************
+drone_constraint: 32000
+28 sensors are selected 
+optimal tour: ['7', '13', '18', '27', '19', '21', '6', '16', '12', '23', '1', '22', '15', '9', '24', '4', '10', '31', '8', '0', '25', '11', '30', '17', '5', '20', '26', '28', 'Depot']
+length of the tour 3010.660348
+optimal energy cost 31996.603480
+***************************************************************
+drone_constraint: 34000
+29 sensors are selected 
+optimal tour: ['7', '13', '19', '21', '27', '18', '20', '5', '17', '16', '6', '12', '23', '1', '22', '15', '9', '24', '4', '10', '31', '8', '0', '25', '11', '30', '29', '26', '28', 'Depot']
+length of the tour 3165.168806
+optimal energy cost 33611.688061
+***************************************************************
+drone_constraint: 36000
+31 sensors are selected 
+optimal tour: ['7', '13', '18', '27', '19', '21', '6', '16', '12', '23', '1', '22', '15', '9', '24', '4', '10', '31', '8', '0', '25', '11', '3', '30', '2', '17', '29', '5', '20', '26', '28', 'Depot']
+length of the tour 3315.423473
+optimal energy cost 35254.234728
+***************************************************************
+drone_constraint: 38000
+32 sensors are selected 
+optimal tour: ['7', '13', '18', '27', '19', '21', '6', '16', '12', '23', '1', '22', '15', '9', '24', '4', '10', '14', '31', '8', '0', '25', '11', '3', '30', '2', '17', '29', '5', '20', '26', '28', 'Depot']
+length of the tour 3421.036629
+optimal energy cost 36380.366293
+***************************************************************
+drone_constraint: 40000
+32 sensors are selected 
+optimal tour: ['7', '13', '18', '27', '19', '21', '6', '16', '12', '23', '1', '22', '15', '9', '24', '4', '10', '14', '31', '8', '0', '25', '11', '3', '30', '2', '17', '29', '5', '20', '26', '28', 'Depot']
+length of the tour 3421.036629
+optimal energy cost 36380.366293
+***************************************************************
+drone_constraint: 42000
+32 sensors are selected 
+optimal tour: ['7', '13', '18', '27', '19', '21', '6', '16', '12', '23', '1', '22', '15', '9', '24', '4', '10', '14', '31', '8', '0', '25', '11', '3', '30', '2', '17', '29', '5', '20', '26', '28', 'Depot']
+length of the tour 3421.036629
+optimal energy cost 36380.366293

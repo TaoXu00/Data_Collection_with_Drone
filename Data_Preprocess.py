@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import glob
 import matplotlib.pyplot as plt
@@ -155,6 +156,19 @@ class Data_Preprocess():
         return new_df
 
 
+    def creat_real_training_dataset(self):
+        # Load the CSV file
+        df = pd.read_csv("Dataset/water_content_2015_Jan_April_32_sensors")
+        print(df.columns)
+
+        # Remove the first column
+        data = df.iloc[:, 2:]
+        #Remove the first row
+
+        data.to_csv('Dataset/water_content_2015_Jan_April_32_sensors_real.txt', sep="\t",index=False, header= False)
+
+dp= Data_Preprocess()
+dp.creat_real_training_dataset()
 
 
 

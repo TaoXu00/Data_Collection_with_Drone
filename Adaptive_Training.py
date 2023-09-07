@@ -1,6 +1,6 @@
 import math
 
-import Data_Generation as DG
+import Data_Generator_and_Loader as DG
 import numpy as np
 import scipy.stats
 class Adaptive_Training:
@@ -51,11 +51,13 @@ class Adaptive_Training:
             print("k_min = %f" %(k_min))
         return abs_error_mean, abs_error_std
 
-    def Adaptive_learning_of_the_interval_multi_var(self, Dataset, gamma):
+    def Adaptive_learning_of_the_interval_multi_var(self, Dataset, num_traing_data):
         '''
         This function is for the training phase, where it learns the mean and covariance matrix of the variables.
         :param Dataset: the target Dataset, every column represents one variable, every row represents one realization of all variables.
-        :return: it returns the learned mean vector and the covariance matrix of the Dataset.
+        :return: it returns the learned mean vector and the covariance matrix of the Dataset,
+                 2D array of mean and variance to track the values in the learning process for each sensor,
+                 and k, the index and data has been used for training
         '''
         num_rows, n_var=Dataset.shape
         k_expect=np.ones(n_var)*np.inf
@@ -70,10 +72,11 @@ class Adaptive_Training:
         k_min=np.amax(k_expect)
         mean_2d=[]
         var_2d=[]
-        gammas=[0.002, 0.004, 0.006, 0.008, 0.01]
-        gamma=gammas[0]
+        #gamma is not using in the current version
+        # gammas=[0.002, 0.004, 0.006, 0.008, 0.01]
+        # gamma=gammas[0]
         #while k_min > k:
-        while k <1500:
+        while k <= num_traing_data:
             #if (k%200) ==0:
             #    gamma=gammas[int(k/200)]
             k=k+1
@@ -91,18 +94,19 @@ class Adaptive_Training:
                 else:
                     mean_2d[n].append(mean_est)
                     var_2d[n].append(var_est)
-                error=gamma*mean_theta[n]
-                if(k>1):
-                    t_value=scipy.stats.t.ppf(q=0.975, df=k-1)
-                    k_min=(t_value/error)**2 * var_theta[n]
-                    k_expect[n]=k_min
+                #  error=gamma*mean_theta[n]
+                # if(k>1):
+                #     t_value=scipy.stats.t.ppf(q=0.975, df=k-1)
+                #     k_min=(t_value/error)**2 * var_theta[n]
+                #     k_expect[n]=k_min
             total_error_mean.append(error_mean)
             #total_error_std.append(error_std)
+            # calculate the covariance matrix of the learned mean and variance
             for i in range(n_var):
                 for j in range(n_var):
                     cov_theta[i][j] = (cov_theta[i][j]*(k-1)+(x[i] - mean_theta[i])*(x[j] - mean_theta[j]))/k
             k_min=np.amax(k_expect)
-        print("%d iterations to achieve gamma %s" % (k, gamma))
+        #print("%d iterations to achieve gamma %s" % (k, gamma))
         return  mean_theta, cov_theta, k, mean_2d, var_2d
 
 
