@@ -9,6 +9,7 @@ import os
 import shutil
 import Exp1
 import Exp2
+import Exp4
 class main():
     def __init__(self, dir_plots, dir_dataset, dir_sensor_map):
         self.plotter=plotter.plotter(dir_plots)
@@ -129,10 +130,12 @@ system=main(dir_plots, dir_dataset, dir_sensor_map)
 exp1=Exp1.Exp1(config)
 exp2=Exp2.Exp2(config)
 exp3=Exp3_real_dataset.Exp3_real_dataset(config)
+exp4=Exp4.Exp4(config)
 #system.cleanup(config)
 dir_exp1=config['Dir']['dir_exp1']
 dir_exp2=config['Dir']['dir_exp2']
 dir_exp3=config['Dir']['dir_exp3']
+dir_exp4=config['Dir']['dir_exp4']
 exps=config['Run']['experiments'].split(',')
 for exp in exps:
     if exp == 'Exp1':
@@ -141,6 +144,8 @@ for exp in exps:
         exp2.exp_2(dir_exp2)
     if exp=='Exp3':
         exp3.exp_3(dir_exp3)
+    if exp == 'Exp4':
+        exp4.exp_4(dir_exp4)
 
 
 

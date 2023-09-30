@@ -11,6 +11,30 @@ class plotter:
         self.linestyles = ['dotted', 'dashed', 'dashdot', (0, (3, 5, 1, 5, 1, 5)), 'solid', '--', 'dotted']
         self.font_size =13
 
+    def plot_averaged_mse_varying_sensor_num(self, sensor_num_list, avg_mse_along_time_total_varying_sensor_numbers,
+                    std_mse_along_time_total_varying_sensor_numbers):
+        plt.figure()
+        plt.rcParams.update({'font.size': self.font_size})
+        x = sensor_num_list
+        plt.errorbar(x, avg_mse_along_time_total_varying_sensor_numbers, std_mse_along_time_total_varying_sensor_numbers, elinewidth=1, capsize=5, capthick=1)
+        plt.xlabel("# of sensors")
+        plt.ylabel('MSE')
+        plt.legend()
+        plt.savefig(self.directory + 'mse.png', format="PNG", bbox_inches='tight')
+        plt.close()
+
+    def plot_selected_sensors_varying_sensor_num(self, sensor_num_list, avg_num_of_selected_nodes_varying_sensor_numbers, std_num_of_selected_nodes_varying_sensor_numbers):
+        plt.figure()
+        plt.rcParams.update({'font.size': self.font_size})
+        x = sensor_num_list
+        plt.errorbar(x, avg_num_of_selected_nodes_varying_sensor_numbers,
+                     std_num_of_selected_nodes_varying_sensor_numbers, elinewidth=1, capsize=5, capthick=1)
+        plt.xlabel("# of available sensors")
+        plt.ylabel('# of selected sensors')
+        plt.legend()
+        plt.savefig(self.directory + 'num_of_collected_sensors.png', format="PNG", bbox_inches='tight')
+        plt.close()
+
     def plot_metrics_with_all_solutions_real_dataset(self, metric, drone_energy_capacity_list, avgs):
         plt.figure()
         plt.rcParams.update({'font.size': self.font_size})
@@ -27,7 +51,22 @@ class plotter:
         plt.savefig(self.directory + '%s.png' % (metric), format="PNG",
                     bbox_inches='tight')
         plt.close()
+    def plot_metrics_with_all_solutions_exp4(self, metric,training_dataset_size_list, avgs, stds):
+        plt.figure()
+        plt.rcParams.update({'font.size': self.font_size})
+        x = training_dataset_size_list
+        keys = list(avgs.keys())
+        for i in range(len(keys)):
+            #if keys[i]=='baseline_ml' or keys[i] =='mysolu':
+            plt.errorbar(x, avgs[keys[i]], stds[keys[i]], label=keys[i], color=self.colors[i],
+                             linestyle=self.linestyles[i], elinewidth=1, capsize=5, capthick=1)
 
+        plt.xlabel("# of available sensors")
+        plt.ylabel(metric)
+        plt.legend()
+        plt.savefig(self.directory + '%s.png' % (metric), format="PNG",
+                    bbox_inches='tight')
+        plt.close()
     def plot_metrics_with_all_solutions_exp2(self, metric,training_dataset_size_list, avgs, stds):
         plt.figure()
         plt.rcParams.update({'font.size': self.font_size})

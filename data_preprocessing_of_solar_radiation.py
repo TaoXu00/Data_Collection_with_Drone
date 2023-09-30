@@ -13,7 +13,7 @@ map={}
 mercator_proj = pyproj.Proj(proj='utm',zone='10', ellps='WGS84')
 min_esting=math.inf
 min_northing=math.inf
-with open('solar_radiation_dataset/Solar_Radiation_sensor_map', 'r') as file:
+with open('Dataset/solar_radiation_dataset/Solar_Radiation_sensor_map', 'r') as file:
     for line in file:
         # Assuming each line contains valid JSON
         values=line.split(',')
@@ -44,7 +44,7 @@ with open('solar_radiation_dataset/Solar_Radiation_sensor_map', 'r') as file:
 # plt.grid()
 # plt.show()
 
-file_path = 'solar_radiation_dataset/DataMatrix_319.txt'
+file_path = 'Dataset/solar_radiation_dataset/DataMatrix_319.txt'
 data_rf = pd.read_csv(file_path, sep='\t')
 cleaned_df= data_rf.dropna(how='any')
 cleaned_df = cleaned_df.iloc[:, :-1].reset_index(drop=True)

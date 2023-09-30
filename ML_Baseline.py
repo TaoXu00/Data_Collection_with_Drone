@@ -32,8 +32,6 @@ class ML_Baseline:
         self.num_of_data_for_training= num_of_data_for_training
         self.num_of_data_for_inference= num_of_data_for_inference
 
-
-
     def calculate_weight_acoording_to_energy(self,  selected_vars, availbale_vars,sensor_json, drone, size_of_collect_data):
         weights_dict = {}
         for j in range(len(availbale_vars)):  # observed var
@@ -105,7 +103,7 @@ class ML_Baseline:
         last_tour_distance=0
         num_sensors = len(self.sensor_map) - 1
         available_vars = list(sensor_map.keys())[:num_sensors]
-        w = num_sensors-1  ##select all the variables
+        w = num_sensors  ##select all the variables
         weights_dict={}
         while w != 0:
             # todo use tsp to calculate the incurred additional total distance
@@ -226,8 +224,8 @@ class ML_Baseline:
     def train_model(self):
         # use the distance as the weight for feature selection
         #vars_rank= self.rank_sensor_with_distance(num_sensors, sensor_map)
-        #vars_rank = self.rank_sensor_with_energy(self.sensor_map, self.drone, self.size_of_data_collection)
-        vars_rank = self.rank_sensors_with_energy_cost_updated(self.sensor_map, self.drone, self.size_of_data_collection)
+        vars_rank = self.rank_sensor_with_energy(self.sensor_map, self.drone, self.size_of_data_collection)
+        #vars_rank = self.rank_sensors_with_energy_cost_updated(self.sensor_map, self.drone, self.size_of_data_collection)
         vars_rank = vars_rank[1:]
         print(vars_rank)
         selected_vars, optimal_tour, optimal_distance, optimal_energy_cost=self.binary_search(vars_rank, self.drone, self.sensor_map, self.size_of_data_collection)

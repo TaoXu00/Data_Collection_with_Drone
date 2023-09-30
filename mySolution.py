@@ -83,10 +83,8 @@ class mySolution:
         """
         print("start learning ...")
         mean_theta, cov_theta, k, mean_2d, var_2d = self.adap_train.Adaptive_learning_of_the_interval_multi_var( self.dataset, self.num_of_training_data)   #traning process for lerning the mean and covariance of all the sensors
-        #np.savetxt("Dataset/VW_2015_Jan_April_32_sensors_hourly_synthetic/mean_vec.txt", mean_theta)
-        #np.savetxt("Dataset/VW_2015_Jan_April_32_sensors_hourly_synthetic/cov.txt", cov_theta)
-        #sample = np.random.multivariate_normal(mean_theta, cov_theta, 10000)
-        #np.savetxt('Dataset/VW_2015_Jan_April_32_sensors_hourly_synthetic/water_content_hourly.txt', sample)
+        print(mean_theta.shape)
+        print(cov_theta.shape)
         # plot the changes along the learning time of mean and var
         '''
         for i in range(0,5):
@@ -96,8 +94,10 @@ class mySolution:
             plt.savefig("sensor %d var learning" %(i), bbox_inches='tight')
         '''
         print("--------Learning is finished---------")
+
+
         #check the leanrning error of mean_vec
-        learn_error=[]
+        #learn_error=[]
         # for i in range(len(self.real_mean_of_sensors)):
         #     learn_error.append(abs(self.real_mean_of_sensors[i]-mean_theta[i]))
         # plt.figure()
@@ -105,9 +105,7 @@ class mySolution:
         # plt.savefig('learning error of the mean')
         mse_along_time, expect_mse, obs_var, tour, optimal_dis, optimal_energy_cost, vars_rank = self.Inference_with_drone_capabilities(self.dataset, mean_theta, cov_theta, k, self.drone, self.sensor_map, self.num_of_estimation_data, self.size_of_data_collection )
 
-        #self.Inference_with_increasing_sensors(dataset,mean_theta, cov_theta,k,heu,sensors_json)
-        #self.plotter.plot_inference_mse_multi_variable_with_different_heuristics(mse_along_time_total_list_heu_dict, n_obs_var)
-        #self.plotter.plot_expect_mse_with_different_heuristics(expected_mse_heu_dict,n_obs_var)
+
         return mse_along_time, expect_mse, obs_var, tour, optimal_dis, optimal_energy_cost, vars_rank
 
 

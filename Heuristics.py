@@ -19,6 +19,9 @@ class Heuristics:
                 coor_y = sensor_json[str(var)]['Northing']
                 current_var=availbale_vars[j]
                 dist = np.sqrt((sensor_json[str(current_var)]['Easting']-coor_x)**2+(sensor_json[str(current_var)]['Northing']-coor_y)**2)
+                #if we want to change it to cost of the operation fee. We need to know the time.
+                #cost = dist/speed * unit_time_uav_operation_cost + (size_of_data_collection/ drone.comm_rate)* unit_time_uav_operation_cost
+                #cost= (dist/speed + size_of_data_collection/dron.comm_rate) * unite_time_uav_operation_cost
                 energy_cost = dist*drone.flying_energy_per_unit + (size_of_data_collection/drone.comm_rate)*drone.hovering_energy_per_unit
                 if weight_energy_cost>energy_cost:
                     weight_energy_cost=dist
@@ -59,6 +62,7 @@ class Heuristics:
                 for sensor in location_ids:
                     coordinates[sensor] = (
                         float(sensor_map[sensor]['Easting']), float(sensor_map[sensor]['Northing']))
+
                 my_tsp = tsp.tsp_solver(location_ids, coordinates)
                 tour, dis = my_tsp.solve()
             energy_cost = (dis-dis_current) * drone.flying_energy_per_unit + (
@@ -74,8 +78,8 @@ class Heuristics:
         cov_y = cov
         w=len(available_vars) ##select all the variables
         while w != 0:
-            #weights_dict = self.calculate_weight(cov_y,selected_vars,available_vars,sensor_map, drone, size_of_data_collection) #the parameter here is different
-            weights_dict= self.calculate_weight_updated(cov_y, selected_vars, available_vars, sensor_map, drone, size_of_data_collection)
+            weights_dict = self.calculate_weight(cov_y,selected_vars,available_vars,sensor_map, drone, size_of_data_collection) #the parameter here is different
+            #weights_dict= self.calculate_weight_updated(cov_y, selected_vars, available_vars, sensor_map, drone, size_of_data_collection)
             sorted_d = dict(sorted(weights_dict.items(), key=lambda x: x[1], reverse=True))
             top_one = list(sorted_d.keys())[0]
             top_one_var = available_vars[top_one]
