@@ -36,17 +36,18 @@ class ML_Baseline:
         weights_dict = {}
         for j in range(len(availbale_vars)):  # observed var
             # compute the distance cost
-            weight_energy = math.inf
+            weight_cost = math.inf
             for var in selected_vars:
                 coor_x = sensor_json[str(var)]['Easting']
                 coor_y = sensor_json[str(var)]['Northing']
                 current_var = availbale_vars[j]
                 dist = np.sqrt((sensor_json[str(current_var)]['Easting'] - coor_x) ** 2 + (
                             sensor_json[str(current_var)]['Northing'] - coor_y) ** 2)
-                energy_cost=dist* drone.flying_energy_per_unit +  (size_of_collect_data/drone.comm_rate)*drone.hovering_energy_per_unit
-                if weight_energy > energy_cost:
-                         weight_energy =energy_cost
-            weights_dict[j] = 1 / weight_energy
+                cost = (dist/drone.speed + size_of_collect_data/drone.comm_rate) * drone.unit_time_uav_operation_cost
+                #energy_cost=dist* drone.flying_energy_per_unit +  (size_of_collect_data/drone.comm_rate)*drone.hovering_energy_per_unit
+                if weight_cost > cost:
+                         weight_cost =cost
+            weights_dict[j] = 1 / weight_cost
         return weights_dict
 
     def rank_sensor_with_energy(self, sensor_map, drone, size_of_collect_data) -> object:
@@ -181,7 +182,7 @@ class ML_Baseline:
         # loop until the bounds cross each other
         optimal_tour=[]
         optimal_distance=0
-        optimal_energy_cost=0
+        optimal_cost=0
         while left <= right and len(selected)<len(ranked_sensors):
             mid= (left+right)//2
             bin= ranked_sensors[left:mid+1]
@@ -196,7 +197,7 @@ class ML_Baseline:
                 n2=(float(sensors_json[location_ids[1]]['Easting']), float(sensors_json[location_ids[1]]['Northing']))
                 tour = location_ids
                 dis = math.sqrt((n1[0] - n2[0]) ** 2 + (n1[1] - n2[1]) ** 2)*2
-                total_energy_cost= dis * drone.flying_energy_per_unit + (size_of_data_collection/drone.comm_rate)
+                total_cost= (dis/drone.speed  + size_of_data_collection/drone.comm_rate) * drone.unit_time_uav_operation_cost
             else:
                 coordinates={}
                 coordinates['Depot']=(float(sensors_json['Depot']['Easting']), float(sensors_json['Depot']['Northing']))
@@ -205,21 +206,21 @@ class ML_Baseline:
                 my_tsp= tsp.tsp_solver(location_ids, coordinates)
                 tour, dis= my_tsp.solve()
                 #compute the energy cost, sum of the hovering energy and the flying energy
-                hovering_energy_cost= drone.hovering_energy_per_unit * (size_of_data_collection/drone.comm_rate) * (len(candidate)-1)
-                flying_energy_cost= drone.flying_energy_per_unit*dis
-                total_energy_cost=hovering_energy_cost + flying_energy_cost
-            if total_energy_cost == drone.capacity:
-                optimal_energy_cost= total_energy_cost
-                return selected, tour, dis, total_energy_cost
-            elif total_energy_cost < drone.capacity:
+                hovering_cost= drone.unit_time_uav_operation_cost * (size_of_data_collection/drone.comm_rate) * (len(candidate)-1)
+                flying_cost= drone.unit_time_uav_operation_cost * dis/drone.speed
+                total_cost=hovering_cost + flying_cost
+            if total_cost == drone.capacity:
+                optimal_cost= total_cost
+                return selected, tour, dis, optimal_cost
+            elif total_cost < drone.capacity:
                 selected=candidate
                 left=mid+1
                 optimal_tour = tour
                 optimal_distance = dis
-                optimal_energy_cost=total_energy_cost
+                optimal_cost=total_cost
             else:
                 right=mid-1
-        return selected, optimal_tour, optimal_distance, optimal_energy_cost
+        return selected, optimal_tour, optimal_distance, optimal_cost
 
     def train_model(self):
         # use the distance as the weight for feature selection
@@ -228,7 +229,7 @@ class ML_Baseline:
         #vars_rank = self.rank_sensors_with_energy_cost_updated(self.sensor_map, self.drone, self.size_of_data_collection)
         vars_rank = vars_rank[1:]
         print(vars_rank)
-        selected_vars, optimal_tour, optimal_distance, optimal_energy_cost=self.binary_search(vars_rank, self.drone, self.sensor_map, self.size_of_data_collection)
+        selected_vars, optimal_tour, optimal_distance, optimal_cost=self.binary_search(vars_rank, self.drone, self.sensor_map, self.size_of_data_collection)
         #Then use the observation of the selected sensors to train the machine learning model, and the inference data for testing
         #prepare the train and test Dataset
         #models = [GradientBoostingRegressor(), LinearSVR(), LinearRegression(), RandomForestRegressor()]
@@ -246,4 +247,4 @@ class ML_Baseline:
             #mse_list=total_mse_list_for_all_models[0]
         else:
             total_mse_list_for_all_models=[math.inf]*len(models)
-        return selected_vars, total_mse_list_for_all_models, optimal_tour, optimal_distance, optimal_energy_cost,vars_rank
+        return selected_vars, total_mse_list_for_all_models, optimal_tour, optimal_distance, optimal_cost,vars_rank

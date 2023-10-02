@@ -1,0 +1,9 @@
+Path Plan with different operatoion budget
+***************************************************************
+vars rank : [6, 5, 2, 9, 17, 15, 12, 11, 7, 19, 14, 8, 16, 0, 1, 18, 13, 10, 3, 4]
+drone_constraint: 80
+12 sensors are selected 
+optimal tour: ['6', '5', '7', '9', '8', '1', '11', '2', '0', 'Depot', '17', '19', '16']
+length of the tour 6993.036608
+optimal cost 79.900407
+mse 5053.504556 

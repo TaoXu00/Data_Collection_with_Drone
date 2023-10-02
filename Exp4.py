@@ -58,7 +58,7 @@ class Exp4:
 
     def exp_4_my_solution(self, dir_solu, num_sensor_scalability_dir_list, drone_energy_capacity, hovering_energy_per_unit,
                           flying_energy_per_unit, num_of_training_data,  num_of_estimation_data,
-                          size_data_collection, drone_commu_rate,mse_file_name, sensor_length_file_name):
+                          size_data_collection, drone_commu_rate,mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost):
         sensor_num_list = []
         expected_mse_list_varying_sensor_numbers = []
         avg_mse_total_varying_sensor_numbers = []
@@ -89,7 +89,7 @@ class Exp4:
             mse_total = []
             num_of_selected_nodes = []
             optimal_dis_list = []
-            optimal_energy_cost_list = []
+            optimal_cost_list = []
             for sensor_map_file in sensor_map_files:
                 # Create the directory if it doesn't exist
                 map_name, file_extention = os.path.splitext(sensor_map_file)
@@ -105,13 +105,13 @@ class Exp4:
                 exp4_solu_plotter_num_sensor = plotter.plotter(map_id_dir + '/')
                 with open('%spath_plan_mysolu.txt' % (map_id_dir), 'w') as f:
                     f.write(
-                        'Path Plan with different drone capabilities\n')  ## track the trajectory planned for each drone capacity
+                        'Path Plan with different operation Budget\n')  ## track the trajectory planned for each drone capacity
                     tour_id = 0
-                    drone = Drone.Drone(drone_energy_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate)
+                    drone = Drone.Drone(drone_energy_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost)
 
                     solu = mySolution.mySolution(exp4_solu_plotter_num_sensor, dataset, drone, sensor_map, num_of_training_data,
                                                    num_of_estimation_data, size_data_collection)
-                    mse_along_time, expect_mse, selected_sensors, tour, optimal_dis, optimal_energy_cost, vars_rank = solu.run()
+                    mse_along_time, expect_mse, selected_sensors, tour, optimal_dis, optimal_cost, vars_rank = solu.run()
 
                     mse = np.average(mse_along_time)
                     f.write('***************************************************************\n')
@@ -120,20 +120,18 @@ class Exp4:
                     f.write('%d sensors are selected \n' % (len(selected_sensors)))
                     f.write('optimal tour: %s\n' % (tour))
                     f.write('length of the tour %f\n' % (optimal_dis))
-                    f.write('optimal energy cost %f\n' % (optimal_energy_cost))
+                    f.write('optimal cost %f\n' % (optimal_cost))
                     f.write('mse %f \n' %(mse))
                     f.close()
                 if len(tour) != 0:
-                    exp4_solu_plotter_num_sensor.plot_tour_map(sensor_map, tour, tour_id, optimal_dis, optimal_energy_cost)
+                    exp4_solu_plotter_num_sensor.plot_tour_map(sensor_map, tour, tour_id, optimal_dis, optimal_cost)
                     tour_id += 1
                 mse_total.append(mse)
                 num_of_selected_nodes.append(len(selected_sensors))
                 expected_mse_list.append(expect_mse)
                 optimal_dis_list.append(optimal_dis)
-                optimal_energy_cost_list.append(optimal_energy_cost)
+                optimal_cost_list.append(optimal_cost)
                 f.close()
-
-
             # mse
             avg_mse = np.average(mse_total)
             std_mse = np.std(mse_total)
@@ -145,8 +143,6 @@ class Exp4:
             std_num_of_selected_nodes = np.std(num_of_selected_nodes)
             avg_num_of_selected_nodes_varying_sensor_numbers.append(avg_num_of_selected_nodes)
             std_num_of_selected_nodes_varying_sensor_numbers.append(std_num_of_selected_nodes)
-
-
             # optimal distance
             avg_optimal_dis= np.average(optimal_dis_list)
             std_optimal_dis= np.std(optimal_dis_list)
@@ -154,8 +150,8 @@ class Exp4:
             std_optimal_dis_list_varying_sensor_numbers.append(std_optimal_dis)
 
             # optimal energy cost
-            avg_optimal_energy_cost = np.average(optimal_energy_cost_list)
-            std_optimal_energy_cost = np.average(optimal_energy_cost_list)
+            avg_optimal_energy_cost = np.average(optimal_cost_list)
+            std_optimal_energy_cost = np.average(optimal_cost_list)
             avg_optimal_energy_cost_list_varying_sensor_numbers.append(avg_optimal_energy_cost)
             std_optimal_energy_cost_list_varying_sensor_numbers.append(std_optimal_energy_cost)
 
@@ -169,7 +165,6 @@ class Exp4:
                 f.write('avg_optimal_energy_cost: %f \n' % (avg_optimal_dis))
                 f.write('std_optimal_energy_cost: %f \n' % (std_optimal_dis))
                 f.close()
-
         np.savetxt("%s%s" % (dir_solu, 'avg_' + sensor_length_file_name),
                    avg_num_of_selected_nodes_varying_sensor_numbers)
         np.savetxt("%s%s" % (dir_solu, 'std_' + sensor_length_file_name),
@@ -189,7 +184,7 @@ class Exp4:
 
     def exp4_ML_baseline(self, dir_solu, num_sensor_scalability_dir_list, drone_energy_capacity, hovering_energy_per_unit,
                           flying_energy_per_unit, num_of_training_data,  num_of_estimation_data,
-                          size_data_collection, drone_commu_rate,mse_file_name, sensor_length_file_name):
+                          size_data_collection, drone_commu_rate,mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost):
         sensor_num_list = []
         expected_mse_list_varying_sensor_numbers = []
         avg_mse_total_varying_sensor_numbers = []
@@ -236,35 +231,35 @@ class Exp4:
                 exp4_solu_plotter_num_sensor = plotter.plotter(map_id_dir + '/')
                 with open('%spath_plan_bs_ml.txt' % (map_id_dir), 'w') as f:
                     f.write(
-                        'Path Plan with different drone capabilities\n')  ## track the trajectory planned for each drone capacity
+                        'Path Plan with different operation budget\n')  ## track the trajectory planned for each drone capacity
                     tour_id = 0
                     drone = Drone.Drone(drone_energy_capacity, hovering_energy_per_unit, flying_energy_per_unit,
-                                        drone_commu_rate)
+                                        drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost)
 
                     ml_bs = ML_BS.ML_Baseline(map_id_dir+'/', drone, sensor_map, dataset, size_data_collection,
                                               num_of_training_data,
                                               num_of_estimation_data)
-                    selected_sensors, total_mse_for_all_models, tour, optimal_dis, optimal_energy_cost, vars_rank = ml_bs.train_model()
+                    selected_sensors, total_mse_for_all_models, tour, optimal_dis, optimal_cost, vars_rank = ml_bs.train_model()
                     #mse_along_time, expect_mse, selected_sensors, tour, optimal_dis, optimal_energy_cost, vars_rank = solu.run()
 
                     mse = total_mse_for_all_models[0]
                     f.write('***************************************************************\n')
                     f.write('vars rank : %s\n' % (vars_rank))
-                    f.write('drone_constraint: %d\n' % (drone_energy_capacity))
+                    f.write('operation budget: %d\n' % (drone_energy_capacity))
                     f.write('%d sensors are selected \n' % (len(selected_sensors)))
                     f.write('optimal tour: %s\n' % (tour))
                     f.write('length of the tour %f\n' % (optimal_dis))
-                    f.write('optimal energy cost %f\n' % (optimal_energy_cost))
+                    f.write('optimal  cost %f\n' % (optimal_cost))
                     f.write('mse %f \n' % (mse))
                     f.close()
                 if len(tour) != 0:
                     exp4_solu_plotter_num_sensor.plot_tour_map(sensor_map, tour, tour_id, optimal_dis,
-                                                               optimal_energy_cost)
+                                                               optimal_cost)
                     tour_id += 1
                 mse_total.append(mse)
                 num_of_selected_nodes.append(len(selected_sensors))
                 optimal_dis_list.append(optimal_dis)
-                optimal_energy_cost_list.append(optimal_energy_cost)
+                optimal_energy_cost_list.append(optimal_cost)
                 f.close()
 
             # mse
@@ -324,7 +319,7 @@ class Exp4:
                                       maximum_num_of_training_data,
                                       num_of_estimation_data,
                                       size_data_collection,
-                                      drone_commu_rate, mse_file_name, sensor_length_file_name):
+                                      drone_commu_rate, mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost):
 
         sensor_num_list = []
         avg_mse_total_varying_sensor_numbers = []
@@ -371,11 +366,11 @@ class Exp4:
                 exp4_solu_plotter_num_sensor = plotter.plotter(map_id_dir + '/')
                 with open('%spath_plan_bs_ml.txt' % (map_id_dir), 'w') as f:
                     f.write(
-                        'Path Plan with different drone capabilities\n')  ## track the trajectory planned for each drone capacity
+                        'Path Plan with different operatoion budget\n')  ## track the trajectory planned for each drone capacity
                     tour_id = 0
 
                     drone = Drone.Drone(drone_energy_capacity, hovering_energy_per_unit, flying_energy_per_unit,
-                                        drone_commu_rate)
+                                        drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost)
 
                     fs_bs = FS.Feature_selection_based_baseline(dir_solu, drone, sensor_map, dataset,
                                                                 size_data_collection,
@@ -383,7 +378,7 @@ class Exp4:
 
                     vars_rank = fs_bs.calculate_feature_importance(dataset)
 
-                    total_mse, selected_sensors, tour, optimal_dis, optimal_energy_cost, vars_rank = fs_bs.train_model(
+                    total_mse, selected_sensors, tour, optimal_dis, optimal_cost, vars_rank = fs_bs.train_model(
                         vars_rank, drone)
 
                     mse = total_mse
@@ -393,17 +388,17 @@ class Exp4:
                     f.write('%d sensors are selected \n' % (len(selected_sensors)))
                     f.write('optimal tour: %s\n' % (tour))
                     f.write('length of the tour %f\n' % (optimal_dis))
-                    f.write('optimal energy cost %f\n' % (optimal_energy_cost))
+                    f.write('optimal cost %f\n' % (optimal_cost))
                     f.write('mse %f \n' % (mse))
                     f.close()
                 if len(tour) != 0:
                     exp4_solu_plotter_num_sensor.plot_tour_map(sensor_map, tour, tour_id, optimal_dis,
-                                                               optimal_energy_cost)
+                                                               optimal_cost)
                     tour_id += 1
                 mse_total.append(mse)
                 num_of_selected_nodes.append(len(selected_sensors))
                 optimal_dis_list.append(optimal_dis)
-                optimal_energy_cost_list.append(optimal_energy_cost)
+                optimal_energy_cost_list.append(optimal_cost)
                 f.close()
 
             # mse
@@ -441,9 +436,9 @@ class Exp4:
                 f.write('std_optimal_energy_cost: %f \n' % (std_optimal_dis))
             f.close()
 
-        np.savetxt("%s%s.txt" % (dir_solu, 'avg_' + sensor_length_file_name),
+        np.savetxt("%s%s" % (dir_solu, 'avg_' + sensor_length_file_name),
                    avg_num_of_selected_nodes_varying_sensor_numbers)
-        np.savetxt("%s%s.txt" % (dir_solu, 'std_' + sensor_length_file_name),
+        np.savetxt("%s%s" % (dir_solu, 'std_' + sensor_length_file_name),
                    std_num_of_selected_nodes_varying_sensor_numbers)
 
         np.savetxt("%s%s" % (dir_solu, 'avg_' + mse_file_name), avg_mse_total_varying_sensor_numbers)
@@ -458,6 +453,71 @@ class Exp4:
             std_num_of_selected_nodes_varying_sensor_numbers)
 
 
+    def generat_100_senosrs(self, dir_maps, dir_exp4, map_x_scale, map_y_scale, num_clusters, template_dataset_file_path, map_num, step_size):
+        if not os.path.exists(dir_maps):
+            os.makedirs(dir_maps)
+            os.chmod(dir_maps, 0o700)
+        self.plotter = plotter.plotter(dir_exp4)
+        num_sensor_scalability_dir_list=[]
+        dir_100_sensor= dir_exp4
+        points_per_cluster=20
+        map_num_100_sensors= 1
+        self.DGL.generate_clustered_maps(map_x_scale, map_y_scale, dir_100_sensor, map_num_100_sensors, self.plotter, num_clusters,
+                                        points_per_cluster, template_dataset_file_path)
+        # generate the sensor maps with increasing sensors [20, 40, 60, 80, 100]
+        # load the sensor_map_100 and the dataset
+        with open('%smap_0.json' %(dir_exp4), 'r') as json_file:
+            map_json_100 = json.load(json_file)
+        dataset= np.loadtxt("%sdataset_map_0.txt" %(dir_exp4))
+        for i in range(map_num):
+            #for each map_num, generate the all the scales, such as 20, 40, 60, 80, 100
+            clusters = {}
+            for j in range(num_clusters):
+                clusters[j] = np.arange(j * points_per_cluster, (j + 1) * points_per_cluster)
+            points_per_sensor_num = {}
+            for sensor_num in range(step_size, 101,step_size):
+                points_per_sensor_num[sensor_num] =[]
+                if sensor_num != step_size:
+                    points_per_sensor_num[sensor_num]=points_per_sensor_num[sensor_num-step_size].copy()  #take the previous choices
+                dir_sensor_num= dir_maps + str(sensor_num) + '_sensors/'
+                num_sensor_scalability_dir_list.append(dir_sensor_num)
+                if not os.path.exists(dir_sensor_num):
+                    os.makedirs(dir_sensor_num)
+                    os.chmod(dir_sensor_num, 0o700)
+                num_sensors_to_select_per_cluster= int(step_size/num_clusters)
+                for cluster in clusters:
+                    #samples= random.sample(clusters[cluster], points_per_cluster)
+                    samples= np.random.choice(clusters[cluster], num_sensors_to_select_per_cluster, replace=False)
+                    points_per_sensor_num[sensor_num].extend(samples)
+                    new_cluster = [x for x in clusters[cluster] if x not in samples]
+                    clusters[cluster] = new_cluster
+                #create the map (json, png, dataset_map_0.txt)
+                #sort the sensors
+                points_per_sensor_num[sensor_num].sort()
+                sensor_ids = points_per_sensor_num[sensor_num].copy()
+                str_sensor_ids= [str(id) for id in sensor_ids]
+                print(str_sensor_ids)
+                # create the map, sample them from the map_0.json
+                map={}
+                key=0
+                for id in str_sensor_ids:
+                    location = map_json_100[id]
+                    map[str(key)]=location
+                    key+=1
+                map['Depot']=map_json_100['Depot']
+                    #strore to the folder
+                sensor_map = json.dumps(map, indent=4)
+                with open('%smap_%d.json' % (dir_sensor_num, i), 'w') as json_file:
+                    json_file.write(sensor_map)
+                    #plot the map
+                with open('%smap_%d.json' % (dir_sensor_num, i), 'r') as json_file:
+                    data = json_file.read()
+                    sensor_map = json.loads(data)
+                    self.plot_sensor_graph(sensor_map, self.plotter, '%smap_%d' % (dir_sensor_num, i))
+                    #generate the dataset
+                path_dataset = '%sdataset_map_%d.txt' % (dir_sensor_num, i)
+                dataset_map= dataset[:, sensor_ids]
+                np.savetxt(path_dataset,dataset_map)
 
 
     def exp_4(self, dir_exp4):
@@ -482,6 +542,8 @@ class Exp4:
         drone_commu_rate = int(self.config['Drone']['comm_rate'])
         mse_metric = self.config['Exp_4']['mse_matric_name']
         selected_sensor_metric = self.config['Exp_4']['selected_sensor_matric_name']
+        uav_speed = int(self.config['Drone']['speed'])
+        uav_unit_time_uav_operation_cost = float(self.config['Drone']['unit_time_uav_operation_cost'])
 
         #mse_file_name = self.config['Exp_4']['mse_file_name']
         #sensor_length_file_name = self.config['Exp_4']['sensor_length_file_name']
@@ -489,94 +551,36 @@ class Exp4:
         num_clusters = int(self.config['Exp_4']['num_clusters'])
 
         template_dataset_file_path = self.config['Exp_4']['template_dataset_file_path']
+        #self.generat_100_senosrs(dir_maps, dir_exp4, map_x_scale, map_y_scale, num_clusters, template_dataset_file_path, map_num, step_size)
 
-        if not os.path.exists(dir_maps):
-            os.makedirs(dir_maps)
-            os.chmod(dir_maps, 0o700)
-        self.plotter = plotter.plotter(dir_exp4)
-        num_sensor_scalability_dir_list=[]
-        dir_100_sensor= dir_exp4
-        points_per_cluster=20
-        map_num_100_sensors= 1
-        self.DGL.generate_clustered_maps(map_x_scale, map_y_scale, dir_100_sensor, map_num_100_sensors, self.plotter, num_clusters,
-                                         points_per_cluster, template_dataset_file_path)
-        # generate the sensor maps with increasing sensors [20, 40, 60, 80, 100]
-        #load the sensor_map_100 and the dataset
-        with open('map_0.json', 'r') as json_file:
-            map_json_100 = json.load(json_file)
-        dataset= np.load("dataset_map_0.txt")
-        for i in range(map_num):
-        #for i in range(map_num):
-            clusters={}
-            for j in range(num_clusters):
-                clusters[j]=np.arange(j*points_per_cluster, (j+1)*points_per_cluster)
-            points_per_sensor_num={}
-            for sensor_num in range(step_size, 101,step_size):
-                points_per_sensor_num[sensor_num] =[]
-                if sensor_num != step_size:
-                    points_per_sensor_num[sensor_num]=points_per_sensor_num[sensor_num-step_size].copy()  #take the previous choices
-                dir_sensor_num= dir_maps + str(sensor_num) + '_sensors/'
-                num_sensor_scalability_dir_list.append(dir_sensor_num)
-                if not os.path.exists(dir_sensor_num):
-                    os.makedirs(dir_sensor_num)
-                    os.chmod(dir_sensor_num, 0o700)
-                #points_per_cluster= int(sensor_num/int(num_clusters))
-                num_sensors_to_select_per_cluster= int(step_size/num_clusters)
-                for cluster in clusters:
-                    #samples= random.sample(clusters[cluster], points_per_cluster)
-                    samples= np.random.choice(clusters[cluster], num_sensors_to_select_per_cluster, replace=False)
-                    points_per_sensor_num[sensor_num].extend(samples)
-                    new_cluster = [x for x in clusters[cluster] if x not in samples]
-                    clusters[cluster] = new_cluster
-                #create the map (json, png, dataset_map_0.txt)
-                #sort the sensors
-                sensor_ids= points_per_sensor_num[sensor_num].sort()
-                str_sensor_ids= str(sensor_ids)
-                # Generate data points using K-Means clustering
-                sensors= {id: map_json_100[id] for id in str_sensor_ids if id in map_json_100}
-                location = {}
-                location['Easting'] = 0
-                location['Northing'] = 0
-                sensors['Depot'] = location
-                new_sensor_map = json.dumps(sensor_map, indent=4)
-                with open('%smap_%d.json' % (dir_sensor_num, i), 'w') as json_file:
-                    json_file.write(new_sensor_map)
-                with open('%smap_%d.json' % (dir_sensor_num, i), 'r') as json_file:
-                    data = json_file.read()
-                    sensor_map = json.loads(data)
-                self.plot_sensor_graph(sensor_map, plotter, '%smap_%d' % (dir_sensor_num, i))
-                path_dataset = '%sdataset_map_%d.txt' % (dir_sensor_num, i)
-                dataset_map= dataset[:, sensor_ids]
-                np.savetxt(path_dataset,dataset_map)
-            print(points_per_sensor_num)
-                #randomly select the points from
-                #self.DGL.generate_clustered_maps(map_x_scale, map_y_scale, dir_sensor_num, map_num, self.plotter, num_clusters, points_per_cluster,template_dataset_file_path)
-            # for each solution, perform the experiment from 20 to 100.
-            dirs_solu = [dir_mysolu, dir_baseline_fs, dir_baseline_ml]
-            #dirs_solu = [dir_baseline_fs]
-            # for dir_solu in dirs_solu:
-            #     #make the solution dir
-            #     if not os.path.exists(dir_solu):
-            #         os.makedirs(dir_solu)
-            #         os.chmod(dir_solu, 0o700)
-            #     if dir_solu == dir_mysolu:
-            #         self.exp_4_my_solution(dir_solu, num_sensor_scalability_dir_list, drone_energy_capacity, hovering_energy_per_unit,
-            #                   flying_energy_per_unit, maximum_num_of_training_data,  num_of_estimation_data,
-            #                   size_data_collection, drone_commu_rate,mse_metric, selected_sensor_metric)
-            #     elif dir_solu == dir_baseline_ml:
-            #         self.exp4_ML_baseline(dir_solu, num_sensor_scalability_dir_list, drone_energy_capacity, hovering_energy_per_unit,
-            #         flying_energy_per_unit, maximum_num_of_training_data, num_of_estimation_data,
-            #         size_data_collection, drone_commu_rate, mse_metric, selected_sensor_metric)
-            #
-            #     elif dir_solu == dir_baseline_fs:
-            #         self.exp4_FS_baseline(dir_solu, num_sensor_scalability_dir_list, drone_energy_capacity,
-            #                               hovering_energy_per_unit,
-            #                               flying_energy_per_unit, maximum_num_of_training_data, num_of_estimation_data,
-            #                               size_data_collection, drone_commu_rate, mse_metric, selected_sensor_metric)
-
-
+        dirs_solu = [dir_mysolu, dir_baseline_fs, dir_baseline_ml]
+        #dirs_solu = [dir_mysolu]
+        num_sensor_scalability_dir_list = []
+        # for sensor_num in range(step_size, 101, step_size):
+        #     dir_sensor_num = dir_maps + str(sensor_num) + '_sensors/'
+        #     num_sensor_scalability_dir_list.append(dir_sensor_num)
+        # for dir_solu in dirs_solu:
+        #     #make the solution dir
+        #     if not os.path.exists(dir_solu):
+        #         os.makedirs(dir_solu)
+        #         os.chmod(dir_solu, 0o700)
+        #     if dir_solu == dir_mysolu:
+        #         self.exp_4_my_solution(dir_solu, num_sensor_scalability_dir_list, drone_energy_capacity, hovering_energy_per_unit,
+        #                   flying_energy_per_unit, maximum_num_of_training_data,  num_of_estimation_data,
+        #                   size_data_collection, drone_commu_rate,mse_metric, selected_sensor_metric, uav_speed, uav_unit_time_uav_operation_cost)
+        #     elif dir_solu == dir_baseline_ml:
+        #         self.exp4_ML_baseline(dir_solu, num_sensor_scalability_dir_list, drone_energy_capacity, hovering_energy_per_unit,
+        #         flying_energy_per_unit, maximum_num_of_training_data, num_of_estimation_data,
+        #         size_data_collection, drone_commu_rate, mse_metric, selected_sensor_metric, uav_speed, uav_unit_time_uav_operation_cost)
+        #
+        #     elif dir_solu == dir_baseline_fs:
+        #         self.exp4_FS_baseline(dir_solu, num_sensor_scalability_dir_list, drone_energy_capacity,
+        #                               hovering_energy_per_unit,
+        #                               flying_energy_per_unit, maximum_num_of_training_data, num_of_estimation_data,
+        #                               size_data_collection, drone_commu_rate, mse_metric, selected_sensor_metric, uav_speed, uav_unit_time_uav_operation_cost )
 
         # make the final plot of the metric with three solutions
+        self.plotter = plotter.plotter(dir_exp4)
         matrics = [mse_metric, selected_sensor_metric]
         sensor_num_list = np.arange(step_size, 101,step_size)
         for metric in matrics:
@@ -584,9 +588,18 @@ class Exp4:
             stds = {}
             for dir_solu in dirs_solu:
                 solu_name = dir_solu.split('/')[1]
-                avg = np.loadtxt("%s/avg_%s" % (dir_solu, metric))
-                std = np.loadtxt("%s/std_%s" % (dir_solu, metric))
+                if solu_name == 'mysolu':
+                    solu_name = 'CROP'
+                elif solu_name == 'baseline_ml':
+                    solu_name = 'TSP-ML'
+                elif solu_name == 'baseline_fs':
+                    solu_name = 'FS-ML'
+                avg = np.loadtxt("%savg_%s" % (dir_solu, metric))
+                std = np.loadtxt("%sstd_%s" % (dir_solu, metric))
                 avgs[solu_name] = avg
                 stds[solu_name] = std
-            self.plotter.plot_metrics_with_all_solutions_exp4(metric,sensor_num_list, avgs, stds)
+            if metric == 'MSE':
+                self.plotter.plot_MSE_with_all_solutions_exp4(sensor_num_list, avgs, stds)
+            elif metric == 'num. of selected sensors':
+                self.plotter.plot_selected_sensors_with_all_solutions_exp4(sensor_num_list, avgs, stds)
 

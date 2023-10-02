@@ -13,7 +13,7 @@ class Heuristics:
                 sum += cov[i][j] ** 2
             weight_cor = sum / cov[j][j]
             # compute the distance cost
-            weight_energy_cost = math.inf
+            weight_cost = math.inf
             for var in selected_vars:
                 coor_x = sensor_json[str(var)]['Easting']
                 coor_y = sensor_json[str(var)]['Northing']
@@ -22,11 +22,11 @@ class Heuristics:
                 #if we want to change it to cost of the operation fee. We need to know the time.
                 #cost = dist/speed * unit_time_uav_operation_cost + (size_of_data_collection/ drone.comm_rate)* unit_time_uav_operation_cost
                 #cost= (dist/speed + size_of_data_collection/dron.comm_rate) * unite_time_uav_operation_cost
-                energy_cost = dist*drone.flying_energy_per_unit + (size_of_data_collection/drone.comm_rate)*drone.hovering_energy_per_unit
-                if weight_energy_cost>energy_cost:
-                    weight_energy_cost=dist
-            weights_dict[j] = 1 / weight_energy_cost * weight_cor
 
+                cost = (dist/drone.speed + size_of_data_collection/drone.comm_rate)*drone.unit_time_uav_operation_cost
+                if weight_cost>cost:
+                    weight_cost=cost
+            weights_dict[j] = 1 / weight_cost * weight_cor
         return weights_dict
 
     def calculate_weight_updated(self, cov, selected_vars, availbale_vars, sensor_map, drone, size_of_data_collection):

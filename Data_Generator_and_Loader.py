@@ -44,7 +44,7 @@ class Data_Generator_and_Loader:
 
             # Generate data points using K-Means clustering
             X = []
-            desired_std=40
+            desired_std=200
             for j in range(num_clusters):
                 cluster_points = cluster_centers[j] + np.random.randn(points_per_cluster, 2)* desired_std
                 X.extend(cluster_points)

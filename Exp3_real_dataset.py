@@ -47,7 +47,7 @@ class Exp3_real_dataset:
     def exp_3_my_solution(self,dir_mysolu, maximum_drone_energy_capacity, step_size,  dataset, sensor_map,
                            hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data,
                            num_of_estimation_data, exp3_my_solu_plotter,size_data_collection, drone_commu_rate,
-                           mse_file_name,sensor_length_file_name):
+                           mse_file_name,sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost):
         expected_mse_list = []
         mse_along_time_total = []
         num_of_selected_nodes = []
@@ -58,9 +58,9 @@ class Exp3_real_dataset:
             f.write('Path Plan with different drone capabilities\n') ## track the trajectory planned for each drone capacity
             tour_id=0
             for drone_capacity in drone_capacity_list:
-                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate)
-                mySolu=mySolution.mySolution(plotter, dataset, drone, sensor_map, number_of_training_data, num_of_estimation_data, size_data_collection)
-                mse_along_time, expect_mse, selected_sensors, tour, optimal_dis, optimal_energy_cost, vars_rank =mySolu.run()
+                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost)
+                mySolu=mySolution.mySolution(plotter, dataset, drone, sensor_map, number_of_training_data, num_of_estimation_data, size_data_collection, )
+                mse_along_time, expect_mse, selected_sensors, tour, optimal_dis, optimal_cost, vars_rank =mySolu.run()
                 mse_along_time_total.append(mse_along_time)
                 f.write('***************************************************************\n')
                 f.write('vars_rank: %s \n' %(vars_rank))
@@ -68,13 +68,13 @@ class Exp3_real_dataset:
                 f.write('%d sensors are selected \n' % (len(selected_sensors)))
                 f.write('optimal tour: %s\n' % (tour))
                 f.write('length of the tour %f\n' % (optimal_dis))
-                f.write('optimal energy cost %f\n' %(optimal_energy_cost))
+                f.write('optimal cost %f\n' %(optimal_cost))
                 num_of_selected_nodes.append(len(selected_sensors))
                 expected_mse_list.append(expect_mse)
                 optimal_dis_list.append(optimal_dis)
-                optimal_energy_cost_list.append(optimal_energy_cost)
+                optimal_energy_cost_list.append(optimal_cost)
                 if len(tour) != 0:
-                    exp3_my_solu_plotter.plot_tour_map(sensor_map, tour, tour_id, optimal_dis, optimal_energy_cost)
+                    exp3_my_solu_plotter.plot_tour_map(sensor_map, tour, tour_id, optimal_dis, optimal_cost)
                     tour_id += 1
             averaged_mse_varying_drone_capabilities = np.average(mse_along_time_total, axis=1)
             exp3_my_solu_plotter.plot_averaged_mse_vary_drone_capability(drone_capacity_list,
@@ -90,7 +90,7 @@ class Exp3_real_dataset:
 
 
     def exp3_ML_baseline(self, dir_baseline_ml, maximum_drone_energy_capacity, step_size,  dataset, sensor_map, hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data, num_of_estimation_data, exp3_baseline_plotter, size_data_collection, drone_commu_rate,
-                          mse_file_name, sensor_length_file_name):
+                          mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost):
         mse_list_total = []
         num_of_selected_nodes = []
         optimal_dis_list = []
@@ -101,11 +101,11 @@ class Exp3_real_dataset:
                 'Path Plan with different drone capabilities\n')  ## track the trajectory planned for each drone capacity
             tour_id = 0
             for drone_capacity in drone_capacity_list:
-                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate)
+                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost)
                 ml_bs = ML_BS.ML_Baseline(dir_baseline_ml, drone, sensor_map, dataset, size_data_collection, number_of_training_data, num_of_estimation_data)
-                selected_vars,total_mse_for_all_models , optimal_tour, optimal_distance, optimal_energy_cost, vars_rank = ml_bs.train_model()
+                selected_vars,total_mse_for_all_models , optimal_tour, optimal_distance, optimal_cost, vars_rank = ml_bs.train_model()
                 if len(optimal_tour) != 0:
-                    exp3_baseline_plotter.plot_tour_map(sensor_map, optimal_tour, tour_id, optimal_distance, optimal_energy_cost)
+                    exp3_baseline_plotter.plot_tour_map(sensor_map, optimal_tour, tour_id, optimal_distance, optimal_cost)
                 tour_id += 1
         # exp3_baseline_plotter.plotter.plot_mse_with_varying_drone_cap_for_different_ML_models(total_dist_list,
         #                                                              total_mse_list_for_all_ML_models_varying_drone_capability)
@@ -116,14 +116,14 @@ class Exp3_real_dataset:
                 f.write('%d sensors are selected \n' % (len(selected_vars)))
                 f.write('optimal tour: %s\n' % (optimal_tour))
                 f.write('length of the tour %f\n' % (optimal_distance))
-                f.write('optimal energy cost %f\n' % (optimal_energy_cost))
+                f.write('optimal cost %f\n' % (optimal_cost))
                 num_of_selected_nodes.append(len(selected_vars))
                 optimal_dis_list.append(optimal_distance)
-                optimal_energy_cost_list.append(optimal_energy_cost)
+                optimal_energy_cost_list.append(optimal_cost)
                 #here we only have one model GBR
                 mse_list_total.append(total_mse_for_all_models[0])
                 if len(optimal_tour) != 0:
-                    exp3_baseline_plotter.plot_tour_map(sensor_map, optimal_tour, tour_id, optimal_distance, optimal_energy_cost)
+                    exp3_baseline_plotter.plot_tour_map(sensor_map, optimal_tour, tour_id, optimal_distance, optimal_cost)
                     tour_id += 1
             exp3_baseline_plotter.plot_mse_with_varying_drone_capabilities(drone_capacity_list, mse_list_total)
             exp3_baseline_plotter.plot_selected_sensors_vary_drone_capability(drone_capacity_list, num_of_selected_nodes)
@@ -135,7 +135,7 @@ class Exp3_real_dataset:
     def exp3_FS_baseline(self,dir_baseline_fs, maximum_drone_energy_capacity, step_size, dataset, sensor_map,
                               hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data,
                               num_of_estimation_data, exp3_baseline_fs_plotter, size_data_collection, drone_commu_rate,
-                              mse_file_name, sensor_length_file_name):
+                              mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost):
 
         mse_list_total = []
         num_of_selected_nodes = []
@@ -146,22 +146,22 @@ class Exp3_real_dataset:
             f.write(
                 'Path Plan with different drone capabilities\n')  ## track the trajectory planned for each drone capacity
             tour_id = 0
-            drone = Drone.Drone(0, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate)
+            drone = Drone.Drone(0, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost)
             fs_bs = FS.Feature_selection_based_baseline(dir_baseline_fs, drone, sensor_map, dataset,
                                                         size_data_collection,
                                                         number_of_training_data, num_of_estimation_data)
             vars_rank = fs_bs.calculate_feature_importance(dataset)
             print("vars_rank %s:" %(vars_rank))
             for drone_capacity in drone_capacity_list:
-                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate)
+                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost )
                 fs_bs = FS.Feature_selection_based_baseline(dir_baseline_fs, drone, sensor_map, dataset,
                                                             size_data_collection,
                                                             number_of_training_data, num_of_estimation_data)
 
-                total_mse, selected_vars, optimal_tour, optimal_distance, optimal_energy_cost, vars_rank = fs_bs.train_model(vars_rank, drone)
+                total_mse, selected_vars, optimal_tour, optimal_distance, optimal_cost, vars_rank = fs_bs.train_model(vars_rank, drone)
                 if len(optimal_tour) != 0:
                     exp3_baseline_fs_plotter.plot_tour_map(sensor_map, optimal_tour, tour_id, optimal_distance,
-                                                        optimal_energy_cost)
+                                                        optimal_cost)
                 tour_id += 1
                 # exp3_baseline_plotter.plotter.plot_mse_with_varying_drone_cap_for_different_ML_models(total_dist_list,
                 #                                                              total_mse_list_for_all_ML_models_varying_drone_capability)
@@ -172,15 +172,15 @@ class Exp3_real_dataset:
                 f.write('%d sensors are selected \n' % (len(selected_vars)))
                 f.write('optimal tour: %s\n' % (optimal_tour))
                 f.write('length of the tour %f\n' % (optimal_distance))
-                f.write('optimal energy cost %f\n' % (optimal_energy_cost))
+                f.write('optimal energy cost %f\n' % (optimal_cost))
                 num_of_selected_nodes.append(len(selected_vars))
                 optimal_dis_list.append(optimal_distance)
-                optimal_energy_cost_list.append(optimal_energy_cost)
+                optimal_energy_cost_list.append(optimal_cost)
                 # here we only have one model GBR
                 mse_list_total.append(total_mse)
                 if len(optimal_tour) != 0:
                     exp3_baseline_fs_plotter.plot_tour_map(sensor_map, optimal_tour, tour_id, optimal_distance,
-                                                        optimal_energy_cost)
+                                                        optimal_cost)
                     tour_id += 1
             exp3_baseline_fs_plotter.plot_mse_with_varying_drone_capabilities(drone_capacity_list, mse_list_total)
             exp3_baseline_fs_plotter.plot_selected_sensors_vary_drone_capability(drone_capacity_list, num_of_selected_nodes)
@@ -210,7 +210,8 @@ class Exp3_real_dataset:
         drone_commu_rate = int(self.config['Drone']['comm_rate'])
         mse_file_name = self.config['Exp_3']['mse_file_name']
         sensor_length_file_name=self.config['Exp_3']['sensor_length_file_name']
-
+        uav_speed = int(self.config['Drone']['speed'])
+        uav_unit_time_uav_operation_cost = float(self.config['Drone']['unit_time_uav_operation_cost'])
         self.plotter = plotter.plotter(dir_exp3)
 
         # load dataset
@@ -229,7 +230,7 @@ class Exp3_real_dataset:
         exp3_my_solu_plotter = plotter.plotter(dir_mysolu+'/')
 
         self.exp_3_my_solution(dir_mysolu+'/', maximum_drone_energy_capacity, step_size,  dataset, sensor_map, hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data, num_of_estimation_data, exp3_my_solu_plotter,size_data_collection,
-                                drone_commu_rate,mse_file_name, sensor_length_file_name)
+                                drone_commu_rate,mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost)
 
         # # ----------------------------Exp3 Baseline_ML ------------------------------------------------------------------
 
@@ -240,7 +241,7 @@ class Exp3_real_dataset:
         exp3_baseline_ml_plotter = plotter.plotter(dir_baseline_ml+'/')
         self.exp3_ML_baseline(dir_baseline_ml+'/', maximum_drone_energy_capacity, step_size,  dataset, sensor_map,
                               hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data, num_of_estimation_data,
-                              exp3_baseline_ml_plotter, size_data_collection, drone_commu_rate, mse_file_name, sensor_length_file_name)
+                              exp3_baseline_ml_plotter, size_data_collection, drone_commu_rate, mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost)
 
         # #----------------------------Exp3 Baseline_fs ------------------------------------------------------------------
 
@@ -251,7 +252,7 @@ class Exp3_real_dataset:
         self.exp3_FS_baseline(dir_baseline_fs+'/', maximum_drone_energy_capacity, step_size, dataset, sensor_map,
                               hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data,
                               num_of_estimation_data, exp3_baseline_fs_plotter, size_data_collection, drone_commu_rate,
-                              mse_file_name, sensor_length_file_name)
+                              mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost)
 
         # after the all the maps are finished, calculate the average mse and std for the final plots
         # average sensors being selected, and average trip length

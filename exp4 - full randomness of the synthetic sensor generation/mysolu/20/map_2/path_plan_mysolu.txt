@@ -1,9 +1,0 @@
-Path Plan with different drone capabilities
-***************************************************************
-vars rank : [17, 18, 19, 9, 6, 7, 2, 4, 3, 5, 14, 12, 0, 1, 15, 13, 10, 8, 11, 16]
-drone_constraint: 20000
-15 sensors are selected 
-optimal tour: ['17', '9', '12', '14', '15', '0', '1', '2', '4', '6', '7', '3', '5', '18', '19', 'Depot']
-length of the tour 1849.252028
-optimal energy cost 19472.520277
-mse 1994.717648 

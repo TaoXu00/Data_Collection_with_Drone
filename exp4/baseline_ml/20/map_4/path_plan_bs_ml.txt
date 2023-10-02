@@ -1,0 +1,9 @@
+Path Plan with different operation budget
+***************************************************************
+vars rank : [18, 17, 16, 19, 2, 3, 0, 1, 10, 11, 9, 8, 6, 4, 5, 7, 13, 12, 14, 15]
+operation budget: 80
+12 sensors are selected 
+optimal tour: ['18', '17', '16', '19', '9', '8', '11', '10', '2', '3', '0', '1', 'Depot']
+length of the tour 6841.323904
+optimal  cost 78.214710
+mse 10189.199460 

@@ -1,0 +1,8 @@
+avg_mse: 11416.033115
+std_mse: 1434.993634
+avg_num_of_selected_nodes: 12.000000
+std_num_of_selected_nodes: 0.000000
+avg_optimal_dis: 6081.250887 
+std_optimal_dis: 445.503852 
+avg_optimal_energy_cost: 6081.250887 
+std_optimal_energy_cost: 445.503852 

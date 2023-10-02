@@ -63,11 +63,11 @@ class mySolution:
         print(coordinates)
         tour, dis = my_tsp.solve()
         # compute the energy cost, sum of the hovering energy and the flying energy
-        hovering_energy_cost = drone.hovering_energy_per_unit * (size_of_data_collection / drone.comm_rate) * (
+        hovering_cost = drone.unit_time_uav_operation_cost * (size_of_data_collection / drone.comm_rate) * (
                     len(candidate) - 1)
-        flying_energy_cost = drone.flying_energy_per_unit * dis
-        total_energy_cost = hovering_energy_cost + flying_energy_cost
-        return total_energy_cost, tour, dis
+        flying_cost = dis/drone.speed *drone.unit_time_uav_operation_cost
+        total_cost = hovering_cost + flying_cost
+        return total_cost, tour, dis
 
     def run(self):
         """
@@ -103,10 +103,10 @@ class mySolution:
         # plt.figure()
         # plt.plot(np.arange(len(self.real_mean_of_sensors)),learn_error)
         # plt.savefig('learning error of the mean')
-        mse_along_time, expect_mse, obs_var, tour, optimal_dis, optimal_energy_cost, vars_rank = self.Inference_with_drone_capabilities(self.dataset, mean_theta, cov_theta, k, self.drone, self.sensor_map, self.num_of_estimation_data, self.size_of_data_collection )
+        mse_along_time, expect_mse, obs_var, tour, optimal_dis, optimal_cost, vars_rank = self.Inference_with_drone_capabilities(self.dataset, mean_theta, cov_theta, k, self.drone, self.sensor_map, self.num_of_estimation_data, self.size_of_data_collection )
 
 
-        return mse_along_time, expect_mse, obs_var, tour, optimal_dis, optimal_energy_cost, vars_rank
+        return mse_along_time, expect_mse, obs_var, tour, optimal_dis, optimal_cost, vars_rank
 
 
 
@@ -127,7 +127,7 @@ class mySolution:
         # loop until the bounds cross each other
         optimal_tour=[]
         optimal_distance=0
-        optimal_energy_cost=0
+        optimal_cost=0
         while left <= right and len(selected)<len(ranked_sensors):
             mid= (left+right)//2
             bin= ranked_sensors[left:mid+1]
@@ -142,18 +142,18 @@ class mySolution:
                 n2=(float(sensors_json[location_ids[1]]['Easting']), float(sensors_json[location_ids[1]]['Northing']))
                 tour = location_ids
                 dis = math.sqrt((n1[0] - n2[0]) ** 2 + (n1[1] - n2[1]) ** 2)*2
-                total_energy_cost= dis * drone.flying_energy_per_unit + (size_of_data_collection/drone.comm_rate)
+                total_cost= (dis/drone.speed + size_of_data_collection/drone.comm_rate) * drone.unit_time_uav_operation_cost
             else:
-               total_energy_cost, tour, dis =  self.solve_tsp_with_energy_cap(sensors_json, location_ids, drone, size_of_data_collection, candidate)
-            if total_energy_cost == drone.capacity:
-                optimal_energy_cost= total_energy_cost
-                return selected, tour, dis, total_energy_cost
-            elif total_energy_cost < drone.capacity:
+               total_cost, tour, dis =  self.solve_tsp_with_energy_cap(sensors_json, location_ids, drone, size_of_data_collection, candidate)
+            if total_cost == drone.capacity:
+                optimal_cost= total_cost
+                return selected, tour, dis, optimal_cost
+            elif total_cost < drone.capacity:
                 selected=candidate
                 left=mid+1
                 optimal_tour = tour
                 optimal_distance = dis
-                optimal_energy_cost=total_energy_cost
+                optimal_cost=total_cost
             else:
                 right=mid-1
         #after selecting the sensors within the energy budget, use the remaining one to select the closed ones within the budget.
@@ -184,7 +184,7 @@ class mySolution:
         #             optimal_energy_cost=total_energy_cost
         #         else:
         #             selected.remove(sensor)
-        return selected, optimal_tour, optimal_distance, optimal_energy_cost
+        return selected, optimal_tour, optimal_distance, optimal_cost
 
     def Inference_with_drone_capabilities(self, dataset,mean_theta, cov_theta,k, drone, sensors_json, number_of_estimation_data, size_of_data_collection):
         """ The function selects the observation sensors and infer the data from the unselected ones
@@ -212,7 +212,7 @@ class mySolution:
         vars_rank = vars_rank[1:]
         print("sensor_weight_rank: %s" %(vars_rank) )
         #apply binary search to select the subset of sensors within drone capabilities
-        obs_var, tour, optimal_dis, optimal_energy_cost =self.binary_search(vars_rank, drone, sensors_json, size_of_data_collection)
+        obs_var, tour, optimal_dis, optimal_cost =self.binary_search(vars_rank, drone, sensors_json, size_of_data_collection)
         #print("selected %d vars %s:" %(len(obs_var), obs_var))
         #todo handle the case when there is no sensor selected. So there is no inference. put a mark in the plot.
         if len(obs_var)!=0:
@@ -233,7 +233,7 @@ class mySolution:
             obs_var=[]
             tour=[]
             optimal_dis=0
-        return mse_along_time, expect_mse, obs_var, tour, optimal_dis, optimal_energy_cost, vars_rank
+        return mse_along_time, expect_mse, obs_var, tour, optimal_dis, optimal_cost, vars_rank
 
     def Inference_with_increasing_sensors(self, dataset,mean_theta, cov_theta,k,heuristic, sensors_json):
         print("start inference varying the number of sensors with %s selection ..." %(heuristic) )

@@ -84,20 +84,20 @@ class Exp1:
     def exp_1_my_solution(self,dir_mysolu, maximum_drone_energy_capacity, step_size,  dataset, sensor_map,
                            hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data, real_mean_of_sensors,
                            num_of_estimation_data, exp1_my_solu_plotter,size_data_collection, drone_commu_rate,
-                           mse_file_name,sensor_length_file_name):
+                           mse_file_name,sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost):
         expected_mse_list = []
         mse_along_time_total = []
         num_of_selected_nodes = []
         optimal_dis_list = []
-        optimal_energy_cost_list = []
+        optimal_cost_list = []
         drone_capacity_list=range(0, maximum_drone_energy_capacity, step_size)
         with open('%spath_plan_mysolution.txt' %(dir_mysolu), 'w') as f:
             f.write('Path Plan with different drone capabilities\n') ## track the trajectory planned for each drone capacity
             tour_id=0
             for drone_capacity in drone_capacity_list:
-                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate)
+                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost)
                 mySolu=mySolution.mySolution(plotter, dataset, drone, sensor_map, number_of_training_data, num_of_estimation_data, size_data_collection)
-                mse_along_time, expect_mse, selected_sensors, tour, optimal_dis, optimal_energy_cost, vars_rank =mySolu.run()
+                mse_along_time, expect_mse, selected_sensors, tour, optimal_dis, optimal_cost, vars_rank =mySolu.run()
                 mse_along_time_total.append(mse_along_time)
                 f.write('***************************************************************\n')
                 f.write('vars_rank: %s \n' %(vars_rank))
@@ -105,13 +105,13 @@ class Exp1:
                 f.write('%d sensors are selected \n' % (len(selected_sensors)))
                 f.write('optimal tour: %s\n' % (tour))
                 f.write('length of the tour %f\n' % (optimal_dis))
-                f.write('optimal energy cost %f\n' %(optimal_energy_cost))
+                f.write('optimal energy cost %f\n' %(optimal_cost))
                 num_of_selected_nodes.append(len(selected_sensors))
                 expected_mse_list.append(expect_mse)
                 optimal_dis_list.append(optimal_dis)
-                optimal_energy_cost_list.append(optimal_energy_cost)
+                optimal_cost_list.append(optimal_cost)
                 if len(tour) != 0:
-                    exp1_my_solu_plotter.plot_tour_map(sensor_map, tour, tour_id, optimal_dis, optimal_energy_cost)
+                    exp1_my_solu_plotter.plot_tour_map(sensor_map, tour, tour_id, optimal_dis, optimal_cost)
                     tour_id += 1
             averaged_mse_varying_drone_capabilities = np.average(mse_along_time_total, axis=1)
             exp1_my_solu_plotter.plot_averaged_mse_vary_drone_capability(drone_capacity_list,
@@ -119,7 +119,7 @@ class Exp1:
                                                                  expected_mse_list)
             exp1_my_solu_plotter.plot_selected_sensors_vary_drone_capability(drone_capacity_list, num_of_selected_nodes)
             exp1_my_solu_plotter.plot_tour_length_vary_drone_capability(drone_capacity_list, optimal_dis_list)
-            exp1_my_solu_plotter.plot_energy_cost_vary_drone_capability(drone_capacity_list, optimal_energy_cost_list)
+            exp1_my_solu_plotter.plot_energy_cost_vary_drone_capability(drone_capacity_list, optimal_cost_list)
             np.savetxt("%s/%s" % (dir_mysolu, sensor_length_file_name), num_of_selected_nodes)
             np.savetxt("%s/%s" % (dir_mysolu, mse_file_name),
                        averaged_mse_varying_drone_capabilities)
@@ -127,7 +127,7 @@ class Exp1:
 
 
     def exp1_ML_baseline(self, dir_baseline_ml, maximum_drone_energy_capacity, step_size,  dataset, sensor_map, hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data, num_of_estimation_data, exp1_baseline_plotter, size_data_collection, drone_commu_rate,
-                          mse_file_name, sensor_length_file_name):
+                          mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost):
         mse_list_total = []
         num_of_selected_nodes = []
         optimal_dis_list = []
@@ -138,7 +138,7 @@ class Exp1:
                 'Path Plan with different drone capabilities\n')  ## track the trajectory planned for each drone capacity
             tour_id = 0
             for drone_capacity in drone_capacity_list:
-                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate)
+                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost)
                 ml_bs = ML_BS.ML_Baseline(dir_baseline_ml, drone, sensor_map, dataset, size_data_collection, number_of_training_data, num_of_estimation_data)
                 selected_vars,total_mse_for_all_models , optimal_tour, optimal_distance, optimal_energy_cost, vars_rank = ml_bs.train_model()
                 if len(optimal_tour) != 0:
@@ -173,7 +173,7 @@ class Exp1:
     def exp1_FS_baseline(self,dir_baseline_fs, maximum_drone_energy_capacity, step_size, dataset, sensor_map,
                               hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data,
                               num_of_estimation_data, exp1_baseline_fs_plotter, size_data_collection, drone_commu_rate,
-                              mse_file_name, sensor_length_file_name):
+                              mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost):
 
         mse_list_total = []
         num_of_selected_nodes = []
@@ -184,14 +184,14 @@ class Exp1:
             f.write(
                 'Path Plan with different drone capabilities\n')  ## track the trajectory planned for each drone capacity
             tour_id = 0
-            drone = Drone.Drone(0, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate)
+            drone = Drone.Drone(0, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost)
             fs_bs = FS.Feature_selection_based_baseline(dir_baseline_fs, drone, sensor_map, dataset,
                                                         size_data_collection,
                                                         number_of_training_data, num_of_estimation_data)
             vars_rank = fs_bs.calculate_feature_importance(dataset)
             print("vars_rank %s:" %(vars_rank))
             for drone_capacity in drone_capacity_list:
-                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate)
+                drone = Drone.Drone(drone_capacity, hovering_energy_per_unit, flying_energy_per_unit, drone_commu_rate, uav_speed, uav_unit_time_uav_operation_cost)
                 fs_bs = FS.Feature_selection_based_baseline(dir_baseline_fs, drone, sensor_map, dataset,
                                                             size_data_collection,
                                                             number_of_training_data, num_of_estimation_data)
@@ -259,14 +259,14 @@ class Exp1:
         num_clusters=int(self.config['Exp_1']['num_clusters'])
         points_per_cluster= int(self.config['Exp_1']['points_per_cluster'])
         template_dataset_file_path= self.config['Exp_1']['template_dataset_file_path']
+        uav_speed =int( self.config['Drone']['speed'])
+        uav_unit_time_uav_operation_cost = float(self.config['Drone']['unit_time_uav_operation_cost'])
         if not os.path.exists(dir_maps):
             os.makedirs(dir_maps)
             os.chmod(dir_maps, 0o700)
 
         self.plotter = plotter.plotter(dir_exp1)
-        #self.generate_sensor_maps(map_x_scale, map_y_scale, dir_maps, dir_sensor_map, map_num, self.plotter)
-        self.generate_clustered_maps(map_x_scale, map_y_scale, dir_maps, map_num, self.plotter, num_clusters, points_per_cluster,template_dataset_file_path)
-        #self.generate_synthetic_data()
+        #self.DGL.generate_clustered_maps(map_x_scale, map_y_scale, dir_maps, map_num, self.plotter, num_clusters, points_per_cluster,template_dataset_file_path)
         # List all maps in the directory
         files = os.listdir(dir_maps)
         sensor_maps = []
@@ -274,11 +274,11 @@ class Exp1:
             if file.endswith('.json'):
                 sensor_maps.append(file)
 
-        # plot the sensor maps
-        for sensor_map_file in sensor_maps:
-            name, ext= os.path.splitext('%s%s'%(dir_maps, sensor_map_file))
-            sensor_map = json.load(open(dir_maps+sensor_map_file))
-            self.plot_sensor_graph(sensor_map, self.plotter, name)
+        # # plot the sensor maps
+        # for sensor_map_file in sensor_maps:
+        #     name, ext= os.path.splitext('%s%s'%(dir_maps, sensor_map_file))
+        #     sensor_map = json.load(open(dir_maps+sensor_map_file))
+        #     self.plot_sensor_graph(sensor_map, self.plotter, name)
 
         # load dataset
         # print(dir_dataset)
@@ -290,52 +290,52 @@ class Exp1:
 
 
         # Iterate through the files
-        for sensor_map_file in sensor_maps:
-            # Check if the current item is a file
-            if os.path.isfile(os.path.join(dir_maps, sensor_map_file)):
-                print("File:", sensor_map_file)
-
-            # load and plot sensor map
-            sensor_map = json.load(open(dir_maps+sensor_map_file))
-
-            #load dataset
-            name, ext = os.path.splitext(sensor_map_file)
-            dataset=np.loadtxt(dir_maps+'dataset_'+ name+'.txt')
-
-            # Create the directory if it doesn't exist
-            map_name, file_extention= os.path.splitext(sensor_map_file)
-
-            #----------------------------Exp1 my solution ------------------------------------------------------------------
-            if not os.path.exists(dir_mysolu+map_name):
-                os.makedirs(dir_mysolu+map_name)
-                os.chmod(dir_mysolu+map_name, 0o700)
-            # create a plotter for exp1
-            exp1_my_solu_plotter = plotter.plotter(dir_mysolu+map_name+'/')
-
-            self.exp_1_my_solution(dir_mysolu+map_name+'/', maximum_drone_energy_capacity, step_size,  dataset, sensor_map, hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data, real_mean_of_sensors, num_of_estimation_data, exp1_my_solu_plotter,size_data_collection,
-                                    drone_commu_rate,mse_file_name, sensor_length_file_name)
-
-            # ----------------------------Exp1 Baseline_ML ------------------------------------------------------------------
-
-
-            if not os.path.exists(dir_baseline_ml+map_name):
-                os.makedirs(dir_baseline_ml+map_name)
-                os.chmod(dir_baseline_ml+map_name, 0o700)
-            exp1_baseline_ml_plotter = plotter.plotter(dir_baseline_ml+map_name+'/')
-            self.exp1_ML_baseline(dir_baseline_ml+map_name+'/', maximum_drone_energy_capacity, step_size,  dataset, sensor_map,
-                                  hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data, num_of_estimation_data,
-                                  exp1_baseline_ml_plotter, size_data_collection, drone_commu_rate, mse_file_name, sensor_length_file_name)
-
-            # ----------------------------Exp1 Baseline_fs ------------------------------------------------------------------
-
-            if not os.path.exists(dir_baseline_fs+map_name):
-                os.makedirs(dir_baseline_fs+map_name)
-                os.chmod(dir_baseline_fs+map_name, 0o700)
-            exp1_baseline_fs_plotter = plotter.plotter(dir_baseline_fs+map_name+'/')
-            self.exp1_FS_baseline(dir_baseline_fs+map_name+'/', maximum_drone_energy_capacity, step_size, dataset, sensor_map,
-                                  hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data,
-                                  num_of_estimation_data, exp1_baseline_fs_plotter, size_data_collection, drone_commu_rate,
-                                  mse_file_name, sensor_length_file_name)
+        # for sensor_map_file in sensor_maps:
+        #     # Check if the current item is a file
+        #     if os.path.isfile(os.path.join(dir_maps, sensor_map_file)):
+        #         print("File:", sensor_map_file)
+        #
+        #     # load and plot sensor map
+        #     sensor_map = json.load(open(dir_maps+sensor_map_file))
+        #
+        #     #load dataset
+        #     name, ext = os.path.splitext(sensor_map_file)
+        #     dataset=np.loadtxt(dir_maps+'dataset_'+ name+'.txt')
+        #
+        #     # Create the directory if it doesn't exist
+        #     map_name, file_extention= os.path.splitext(sensor_map_file)
+        #
+        #     # #----------------------------Exp1 my solution ------------------------------------------------------------------
+        #     # if not os.path.exists(dir_mysolu+map_name):
+        #     #     os.makedirs(dir_mysolu+map_name)
+        #     #     os.chmod(dir_mysolu+map_name, 0o700)
+        #     # # create a plotter for exp1
+        #     # exp1_my_solu_plotter = plotter.plotter(dir_mysolu+map_name+'/')
+        #     #
+        #     # self.exp_1_my_solution(dir_mysolu+map_name+'/', maximum_drone_energy_capacity, step_size,  dataset, sensor_map, hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data, real_mean_of_sensors, num_of_estimation_data, exp1_my_solu_plotter,size_data_collection,
+        #     #                         drone_commu_rate,mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost)
+        #
+        #     # ----------------------------Exp1 Baseline_ML ------------------------------------------------------------------
+        #
+        #
+        #     if not os.path.exists(dir_baseline_ml+map_name):
+        #         os.makedirs(dir_baseline_ml+map_name)
+        #         os.chmod(dir_baseline_ml+map_name, 0o700)
+        #     exp1_baseline_ml_plotter = plotter.plotter(dir_baseline_ml+map_name+'/')
+        #     self.exp1_ML_baseline(dir_baseline_ml+map_name+'/', maximum_drone_energy_capacity, step_size,  dataset, sensor_map,
+        #                           hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data, num_of_estimation_data,
+        #                           exp1_baseline_ml_plotter, size_data_collection, drone_commu_rate, mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost)
+        #
+        #     # # ----------------------------Exp1 Baseline_fs ------------------------------------------------------------------
+        #     #
+        #     # if not os.path.exists(dir_baseline_fs+map_name):
+        #     #     os.makedirs(dir_baseline_fs+map_name)
+        #     #     os.chmod(dir_baseline_fs+map_name, 0o700)
+        #     # exp1_baseline_fs_plotter = plotter.plotter(dir_baseline_fs+map_name+'/')
+        #     # self.exp1_FS_baseline(dir_baseline_fs+map_name+'/', maximum_drone_energy_capacity, step_size, dataset, sensor_map,
+        #     #                       hovering_energy_per_unit, flying_energy_per_unit, number_of_training_data,
+        #     #                       num_of_estimation_data, exp1_baseline_fs_plotter, size_data_collection, drone_commu_rate,
+        #     #                       mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost)
 
         # after the all the maps are finished, calculate the average mse and std for the final plots
         # average sensors being selected, and average trip length
@@ -352,12 +352,20 @@ class Exp1:
             stds={}
             for dir_solu in dirs_solu:
                 solu_name= dir_solu.split('/')[1]
+                if solu_name == 'mysolu':
+                    solu_name='CROP'
+                elif solu_name == 'baseline_ml':
+                    solu_name = 'TSP-ML'
+                elif solu_name == 'baseline_fs':
+                    solu_name = 'FS-ML'
                 avg=np.loadtxt("%s/%s_avg.txt" %(dir_solu,metric))
                 std=np.loadtxt("%s/%s_std.txt" %(dir_solu,metric))
                 avgs[solu_name]=avg
                 stds[solu_name] = std
-
-            self.plotter.plot_metrics_with_all_solutions(metric, drone_energy_capacity_list, avgs, stds)
+                if metric == 'MSE':
+                    self.plotter.plot_MSE_with_all_solutions(drone_energy_capacity_list, avgs, stds)
+                elif metric == 'num. of selected sensors':
+                    self.plotter.plot_selected_sensors_with_all_solutions(drone_energy_capacity_list, avgs, stds)
 
 
 

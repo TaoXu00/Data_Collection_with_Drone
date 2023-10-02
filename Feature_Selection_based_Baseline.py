@@ -73,7 +73,7 @@ class Feature_selection_based_baseline:
         # loop until the bounds cross each other
         optimal_tour = []
         optimal_distance = 0
-        optimal_energy_cost = 0
+        optimal_cost = 0
         add='True'
         while add == 'True':
             available_sensors = [sensor for sensor in ranked_sensors if sensor not in selected]
@@ -88,7 +88,8 @@ class Feature_selection_based_baseline:
                     n2 = (float(sensors_json[location_ids[1]]['Easting']), float(sensors_json[location_ids[1]]['Northing']))
                     tour = location_ids
                     dis = math.sqrt((n1[0] - n2[0]) ** 2 + (n1[1] - n2[1]) ** 2) * 2
-                    total_energy_cost = dis * drone.flying_energy_per_unit + (size_of_data_collection / drone.comm_rate)
+                    total_cost = (dis / drone.speed + size_of_data_collection / drone.comm_rate) * drone.unit_time_uav_operation_cost
+                    #total_energy_cost = dis * drone.flying_energy_per_unit + (size_of_data_collection / drone.comm_rate)
                 else:
                     coordinates = {}
                     coordinates['Depot'] = (
@@ -99,20 +100,20 @@ class Feature_selection_based_baseline:
                     my_tsp = tsp.tsp_solver(location_ids, coordinates)
                     tour, dis = my_tsp.solve()
                     # compute the energy cost, sum of the hovering energy and the flying energy
-                    hovering_energy_cost = drone.hovering_energy_per_unit * (size_of_data_collection / drone.comm_rate) * (
+                    hovering_cost = drone.unit_time_uav_operation_cost * (size_of_data_collection / drone.comm_rate) * (
                                 len(candidate) - 1)
-                    flying_energy_cost = drone.flying_energy_per_unit * dis
-                    total_energy_cost = hovering_energy_cost + flying_energy_cost
-                if total_energy_cost == drone.capacity:
-                    optimal_energy_cost = total_energy_cost
-                    return selected, tour, dis, total_energy_cost
-                elif total_energy_cost < drone.capacity:
+                    flying_cost = dis/drone.speed * drone.unit_time_uav_operation_cost
+                    total_cost = hovering_cost + flying_cost
+                if total_cost == drone.capacity:
+                    optimal_cost = total_cost
+                    return selected, tour, dis, optimal_cost
+                elif total_cost < drone.capacity:
                     selected = candidate
                     add = 'True'
                     optimal_tour = tour
                     optimal_distance = dis
-                    optimal_energy_cost = total_energy_cost
-        return selected, optimal_tour, optimal_distance, optimal_energy_cost
+                    optimal_cost = total_cost
+        return selected, optimal_tour, optimal_distance, optimal_cost
 
 
 
