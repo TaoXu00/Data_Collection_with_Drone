@@ -263,17 +263,25 @@ class Exp3_real_dataset:
         #make the final plot of the metric with three solutions
         matrics = [mse_metric, selected_sensor_metric]
         drone_energy_capacity_list=np.arange(0, maximum_drone_energy_capacity,step_size)
+        mse_avgs = {}
+        num_sensor_avgs = {}
         for metric in matrics:
-            avgs={}
             for dir_solu in dirs_solu:
                 solu_name= dir_solu.split('/')[1]
+                if solu_name == 'mysolu':
+                    solu_name = 'CROP'
+                elif solu_name == 'baseline_ml':
+                    solu_name = 'TSP-ML'
+                elif solu_name == 'baseline_fs':
+                    solu_name = 'FS-ML'
                 if metric==mse_metric:
                     data=np.loadtxt("%s/mse_varying_drone_capabilities.txt" %(dir_solu))
+                    mse_avgs[solu_name] = data
                 elif metric==selected_sensor_metric:
                     data=np.loadtxt(("%s/sensor_length.txt" %(dir_solu)))
-                avgs[solu_name]=data
-
-            self.plotter.plot_metrics_with_all_solutions_real_dataset(metric, drone_energy_capacity_list, avgs)
+                    num_sensor_avgs[solu_name] = data
+        self.plotter.plot_MSE_with_all_solutions_real_dataset(drone_energy_capacity_list, mse_avgs)
+        self.plotter.plot_number_of_sensor_selected_with_all_solutions_real_dataset(drone_energy_capacity_list, num_sensor_avgs)
         self.plot_sensor_graph(sensor_map, self.plotter, "sensor_map")
 
 

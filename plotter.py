@@ -36,6 +36,8 @@ class plotter:
         plt.savefig(self.directory + 'num_of_collected_sensors.png', format="PNG", bbox_inches='tight')
         plt.close()
 
+
+
     def plot_metrics_with_all_solutions_real_dataset(self, metric, drone_energy_capacity_list, avgs):
         plt.figure()
         plt.rcParams.update({'font.size': self.font_size})
@@ -52,14 +54,15 @@ class plotter:
         plt.savefig(self.directory + '%s.png' % (metric), format="PNG",
                     bbox_inches='tight')
         plt.close()
+
     def plot_MSE_with_all_solutions_exp2(self, training_dataset_size_list, avgs, stds):
         plt.figure()
         plt.rcParams.update(
             {'font.size': 25, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
         plt.grid(True)
         x = training_dataset_size_list
-        xticks=[250, 500, 750, 1000]
-        yticks=[0, 1, 2, 3]
+        xticks=[200, 400, 600, 800, 1000]
+        yticks=[1, 2, 3, 4]
         keys = list(avgs.keys())
         for i in range(len(keys)):
             for j in range(len(avgs[keys[i]])):
@@ -69,7 +72,7 @@ class plotter:
                          markersize=12, capsize=5, elinewidth=1)
         plt.xlabel("size of training dataset")
         plt.ylabel(r'MSE (x$10^4$)')
-        plt.ylim(0,3.5)
+        plt.ylim(0,5)
         plt.xticks(xticks)
         plt.yticks(yticks)
         plt.legend(fontsize=20, loc='upper right')
@@ -83,7 +86,7 @@ class plotter:
             {'font.size': 25, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
         plt.grid(True)
         x=drone_energy_capacity_list
-        xticks=[250, 500, 750, 1000]
+        xticks=[200, 400, 600, 800,1000]
         keys=list(avgs.keys())
         for i in range(len(keys)):
             plt.errorbar(x, avgs[keys[i]], stds[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i], linewidth=2, markersize=10, capsize=5, elinewidth=1)
@@ -111,6 +114,8 @@ class plotter:
             for j in range(len(avgs[keys[i]])):
                 avgs[keys[i]][j] = avgs[keys[i]][j] / 10000
                 stds[keys[i]][j] = stds[keys[i]][j] / 10000
+            print(x)
+            print(avgs[keys[i]])
             plt.errorbar(x, avgs[keys[i]], stds[keys[i]], label=keys[i], color=self.colors[i],
                          marker=self.markers[i],
                          linewidth=2,
@@ -135,18 +140,123 @@ class plotter:
         keys = list(avgs.keys())
         for i in range(len(keys)):
             plt.errorbar(x, avgs[keys[i]], stds[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i],
-                         linewidth=2, markersize=10, capsize=5, elinewidth=1)
+                         linewidth=2, markersize=12, capsize=5, elinewidth=1)
             # plt.errorbar(x, avgs[keys[i]], stds[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i],
             #             linewidth=2, markersize=10, capsize=5, elinewidth=1.5, markevery=2, errorevery=2)
         plt.xticks(xticks)
         plt.yticks(yticks)
         plt.xlabel("# of available sensors")
-        plt.ylabel(" # of selected sensors")
+        plt.ylabel("# of selected sensors")
         plt.legend(fontsize=20, loc='upper left')
         plt.savefig(self.directory + 'num_of_selected_sensors_exp3.png', format="PNG",
                     bbox_inches='tight')
         plt.close()
 
+    def plot_MSE_with_all_solutions_real_dataset(self, drone_energy_capacity_list, avgs):
+        plt.figure()
+        plt.rcParams.update(
+            {'font.size': 25, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
+        plt.grid(True)
+        x = [6, 12, 18, 24, 30, 36]
+        avgs_d = [[1.67E+05, 3.96E+04, 2.78E+04,4.04E+03, 0.00E+00, 0.00E+00],
+                  [3.32E+05, 2.90E+05, 2.53E+05, 1.98E+05, 0.00E+00, 0.00E+00],
+                  [3.94E+05, 2.90E+05, 2.42E+05, 1.74E+05, 0.00E+00, 0.00E+00]]
+        #xticks=[10, 20, 30, 40]
+        xticks=x
+        yticks = [0, 1, 2, 3, 4]
+        #x = drone_energy_capacity_list
+        keys = list(avgs.keys())
+        #print(avgs.keys())
+        for i in range(len(keys)):
+            # for j in range(len(avgs[keys[i]])):
+            #     avgs[keys[i]][j] = avgs[keys[i]][j] / 10000
+            for j in range(len(avgs_d[i])):
+                avgs_d[i][j] = avgs_d[i][j] / 100000
+            #avgs[i]=avgs[i]/100000
+            # plt.plot(x, avgs[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i],
+            #              linewidth=2, markersize=12 )
+            plt.plot(x, avgs_d[i], label=keys[i], color=self.colors[i], marker=self.markers[i],
+                         linewidth=2, markersize=12)
+        plt.xticks(xticks)
+        plt.yticks(yticks)
+        plt.ylabel(r'MSE (x$10^4$)')
+        plt.xlabel("Budget ($)")
+        plt.legend(fontsize=20)
+        plt.savefig(self.directory + '%s.png' % ('MSE_exp4'), format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_number_of_sensor_selected_with_all_solutions_real_dataset(self, drone_energy_capacity_list, avgs):
+        plt.figure()
+        plt.rcParams.update(
+            {'font.size': 25, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
+        plt.grid(True)
+        #xticks = [0, 10, 20, 30]
+        x = [6, 12, 18, 24, 30, 36]
+        xticks=x
+        yticks=[5, 10, 15, 20]
+        #x = drone_energy_capacity_list
+        avgs_d = [[5.00E+00, 7.00E+00, 9.00E+00,1.50E+01,1.90E+01,1.90E+01],
+                  [4.00E+00, 7.00E+00, 9.00E+00, 11.00E+00, 1.90E+01, 1.90E+01],
+                  [5.00E+00, 7.00E+00, 1.00E+01, 1.50E+01, 1.90E+01,1.90E+01]]
+        keys = list(avgs.keys())
+        for i in range(len(keys)):
+            for j in range(len(avgs_d[i])):
+                avgs_d[i][j] = avgs_d[i][j]
+            plt.plot(x, avgs_d[i], label=keys[i], color=self.colors[i], marker=self.markers[i],
+                 linewidth=2, markersize=12)
+        plt.xticks(xticks)
+        plt.yticks(yticks)
+        plt.xlabel("Budget ($)")
+        plt.ylabel("# of selected sensors")
+        plt.legend(fontsize=20, loc='upper left')
+        plt.savefig(self.directory + '%s.png' % ('num_of_selected_sensors_exp4'), format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_MSE_with_all_solutions_real_dataset_exp5(self, num_training_data_list, avgs):
+        plt.figure()
+        plt.rcParams.update(
+            {'font.size': 25, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
+        plt.grid(True)
+        xticks = [200, 400, 600, 800, 1000]
+        yticks = [2.5, 3, 3.5, 4 ]
+        x = num_training_data_list
+        keys = list(avgs.keys())
+        for i in range(len(keys)):
+            for j in range(len(avgs[keys[i]])):
+                avgs[keys[i]][j] = avgs[keys[i]][j] / 10000
+            plt.plot(x, avgs[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i],
+                     linewidth=2, markersize=12, markevery=2)
+        plt.xticks(xticks)
+        plt.yticks(yticks)
+        plt.ylabel(r'MSE (x$10^4$)')
+        plt.xlabel("size of training dataset")
+        plt.legend(fontsize=20)
+        plt.savefig(self.directory + '%s.png' % ('MSE_exp5'), format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_number_of_sensor_selected_with_all_solutions_real_dataset_exp5(self, num_training_data_list, avgs):
+        plt.figure()
+        plt.rcParams.update(
+            {'font.size': 25, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
+        plt.grid(True)
+        xticks = [200, 400, 600, 800, 1000]
+        yticks = [4, 5, 6, 7]
+        x = num_training_data_list
+        keys = list(avgs.keys())
+        for i in range(len(keys)):
+            plt.plot(x, avgs[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i],
+                     linewidth=2, markersize=12, markevery=2)
+        plt.xticks(xticks)
+        plt.yticks(yticks)
+        plt.xlabel("size of training dataset")
+        plt.ylabel("# of selected sensors")
+        plt.legend(fontsize=20, loc='lower right')
+        plt.savefig(self.directory + '%s.png' % ('num_of_selected_sensors_exp5'), format="PNG",
+                    bbox_inches='tight')
+        plt.close()
 
 
     def plot_MSE_with_all_solutions(self,drone_energy_capacity_list, avgs, stds):
@@ -155,7 +265,7 @@ class plotter:
             {'font.size': 25, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
         plt.grid(True)
         x=drone_energy_capacity_list
-        xticks=[40, 120, 200]
+        xticks=[40, 80, 120, 160, 200]
         yticks=[0, 5, 10, 15]
         keys=list(avgs.keys())
         for i in range(len(keys)):
@@ -184,13 +294,15 @@ class plotter:
             {'font.size': 25, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
         plt.grid(True)
         x=drone_energy_capacity_list
-        xticks=[40, 120, 200]
+        xticks=[40, 80, 120, 160, 200]
+        yticks=[0, 20, 40, 60]
         keys=list(avgs.keys())
         for i in range(len(keys)):
             plt.errorbar(x, avgs[keys[i]], stds[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i], linewidth=2, markersize=10, capsize=5, elinewidth=1)
             #plt.errorbar(x, avgs[keys[i]], stds[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i],
             #             linewidth=2, markersize=10, capsize=5, elinewidth=1.5, markevery=2, errorevery=2)
         plt.xticks(xticks)
+        plt.yticks(yticks)
         plt.xlabel("Budget ($)")
         plt.ylabel(" # of selected sensors")
         plt.legend(fontsize=20)

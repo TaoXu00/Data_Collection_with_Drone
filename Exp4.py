@@ -469,55 +469,67 @@ class Exp4:
         with open('%smap_0.json' %(dir_exp4), 'r') as json_file:
             map_json_100 = json.load(json_file)
         dataset= np.loadtxt("%sdataset_map_0.txt" %(dir_exp4))
-        for i in range(map_num):
-            #for each map_num, generate the all the scales, such as 20, 40, 60, 80, 100
-            clusters = {}
-            for j in range(num_clusters):
-                clusters[j] = np.arange(j * points_per_cluster, (j + 1) * points_per_cluster)
-            points_per_sensor_num = {}
-            for sensor_num in range(step_size, 101,step_size):
-                points_per_sensor_num[sensor_num] =[]
-                if sensor_num != step_size:
-                    points_per_sensor_num[sensor_num]=points_per_sensor_num[sensor_num-step_size].copy()  #take the previous choices
-                dir_sensor_num= dir_maps + str(sensor_num) + '_sensors/'
-                num_sensor_scalability_dir_list.append(dir_sensor_num)
-                if not os.path.exists(dir_sensor_num):
-                    os.makedirs(dir_sensor_num)
-                    os.chmod(dir_sensor_num, 0o700)
-                num_sensors_to_select_per_cluster= int(step_size/num_clusters)
-                for cluster in clusters:
-                    #samples= random.sample(clusters[cluster], points_per_cluster)
-                    samples= np.random.choice(clusters[cluster], num_sensors_to_select_per_cluster, replace=False)
-                    points_per_sensor_num[sensor_num].extend(samples)
-                    new_cluster = [x for x in clusters[cluster] if x not in samples]
-                    clusters[cluster] = new_cluster
-                #create the map (json, png, dataset_map_0.txt)
-                #sort the sensors
-                points_per_sensor_num[sensor_num].sort()
-                sensor_ids = points_per_sensor_num[sensor_num].copy()
-                str_sensor_ids= [str(id) for id in sensor_ids]
-                print(str_sensor_ids)
-                # create the map, sample them from the map_0.json
-                map={}
-                key=0
-                for id in str_sensor_ids:
-                    location = map_json_100[id]
-                    map[str(key)]=location
-                    key+=1
-                map['Depot']=map_json_100['Depot']
-                    #strore to the folder
-                sensor_map = json.dumps(map, indent=4)
-                with open('%smap_%d.json' % (dir_sensor_num, i), 'w') as json_file:
-                    json_file.write(sensor_map)
-                    #plot the map
-                with open('%smap_%d.json' % (dir_sensor_num, i), 'r') as json_file:
-                    data = json_file.read()
-                    sensor_map = json.loads(data)
-                    self.plot_sensor_graph(sensor_map, self.plotter, '%smap_%d' % (dir_sensor_num, i))
-                    #generate the dataset
-                path_dataset = '%sdataset_map_%d.txt' % (dir_sensor_num, i)
-                dataset_map= dataset[:, sensor_ids]
-                np.savetxt(path_dataset,dataset_map)
+        data_1d = dataset.ravel()
+        # Compute the minimum, maximum, mean, and standard deviation
+        min_val = np.min(data_1d[data_1d>0])
+        max_val = np.max(data_1d)
+        mean_val = np.mean(data_1d)
+        std_val = np.std(data_1d)
+
+        # Print the results
+        print(f"Minimum: {min_val}")
+        print(f"Maximum: {max_val}")
+        print(f"Mean: {mean_val}")
+        print(f"Standard Deviation: {std_val}")
+        # for i in range(map_num):
+        #     #for each map_num, generate the all the scales, such as 20, 40, 60, 80, 100
+        #     clusters = {}
+        #     for j in range(num_clusters):
+        #         clusters[j] = np.arange(j * points_per_cluster, (j + 1) * points_per_cluster)
+        #     points_per_sensor_num = {}
+        #     for sensor_num in range(step_size, 101,step_size):
+        #         points_per_sensor_num[sensor_num] =[]
+        #         if sensor_num != step_size:
+        #             points_per_sensor_num[sensor_num]=points_per_sensor_num[sensor_num-step_size].copy()  #take the previous choices
+        #         dir_sensor_num= dir_maps + str(sensor_num) + '_sensors/'
+        #         num_sensor_scalability_dir_list.append(dir_sensor_num)
+        #         if not os.path.exists(dir_sensor_num):
+        #             os.makedirs(dir_sensor_num)
+        #             os.chmod(dir_sensor_num, 0o700)
+        #         num_sensors_to_select_per_cluster= int(step_size/num_clusters)
+        #         for cluster in clusters:
+        #             #samples= random.sample(clusters[cluster], points_per_cluster)
+        #             samples= np.random.choice(clusters[cluster], num_sensors_to_select_per_cluster, replace=False)
+        #             points_per_sensor_num[sensor_num].extend(samples)
+        #             new_cluster = [x for x in clusters[cluster] if x not in samples]
+        #             clusters[cluster] = new_cluster
+        #         #create the map (json, png, dataset_map_0.txt)
+        #         #sort the sensors
+        #         points_per_sensor_num[sensor_num].sort()
+        #         sensor_ids = points_per_sensor_num[sensor_num].copy()
+        #         str_sensor_ids= [str(id) for id in sensor_ids]
+        #         print(str_sensor_ids)
+        #         # create the map, sample them from the map_0.json
+        #         map={}
+        #         key=0
+        #         for id in str_sensor_ids:
+        #             location = map_json_100[id]
+        #             map[str(key)]=location
+        #             key+=1
+        #         map['Depot']=map_json_100['Depot']
+        #             #strore to the folder
+        #         sensor_map = json.dumps(map, indent=4)
+        #         with open('%smap_%d.json' % (dir_sensor_num, i), 'w') as json_file:
+        #             json_file.write(sensor_map)
+        #             #plot the map
+        #         with open('%smap_%d.json' % (dir_sensor_num, i), 'r') as json_file:
+        #             data = json_file.read()
+        #             sensor_map = json.loads(data)
+        #             self.plot_sensor_graph(sensor_map, self.plotter, '%smap_%d' % (dir_sensor_num, i))
+        #             #generate the dataset
+        #         path_dataset = '%sdataset_map_%d.txt' % (dir_sensor_num, i)
+        #         dataset_map= dataset[:, sensor_ids]
+        #         np.savetxt(path_dataset,dataset_map)
 
 
     def exp_4(self, dir_exp4):
@@ -551,7 +563,7 @@ class Exp4:
         num_clusters = int(self.config['Exp_4']['num_clusters'])
 
         template_dataset_file_path = self.config['Exp_4']['template_dataset_file_path']
-        #self.generat_100_senosrs(dir_maps, dir_exp4, map_x_scale, map_y_scale, num_clusters, template_dataset_file_path, map_num, step_size)
+        self.generat_100_senosrs(dir_maps, dir_exp4, map_x_scale, map_y_scale, num_clusters, template_dataset_file_path, map_num, step_size)
 
         dirs_solu = [dir_mysolu, dir_baseline_fs, dir_baseline_ml]
         #dirs_solu = [dir_mysolu]

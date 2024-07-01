@@ -347,6 +347,7 @@ class Exp1:
         #make the final plot of the metric with three solutions
         matrics = [mse_metric, selected_sensor_metric]
         drone_energy_capacity_list=np.arange(0, maximum_drone_energy_capacity,step_size)
+        drone_energy_capacity_list=drone_energy_capacity_list[2:]
         for metric in matrics:
             avgs={}
             stds={}
@@ -360,12 +361,14 @@ class Exp1:
                     solu_name = 'FS-ML'
                 avg=np.loadtxt("%s/%s_avg.txt" %(dir_solu,metric))
                 std=np.loadtxt("%s/%s_std.txt" %(dir_solu,metric))
+                avg=avg[2:]
+                std=std[2:]
                 avgs[solu_name]=avg
                 stds[solu_name] = std
-                if metric == 'MSE':
-                    self.plotter.plot_MSE_with_all_solutions(drone_energy_capacity_list, avgs, stds)
-                elif metric == 'num. of selected sensors':
-                    self.plotter.plot_selected_sensors_with_all_solutions(drone_energy_capacity_list, avgs, stds)
+            if metric == 'MSE':
+                self.plotter.plot_MSE_with_all_solutions(drone_energy_capacity_list, avgs, stds)
+            elif metric == 'num. of selected sensors':
+                self.plotter.plot_selected_sensors_with_all_solutions(drone_energy_capacity_list, avgs, stds)
 
 
 

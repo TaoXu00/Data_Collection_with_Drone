@@ -37,8 +37,8 @@ class Exp2:
             combined_mse_2D=np.array(mse_list_2D)
             avg= np.mean(combined_mse_2D,axis=0)
             std= np.std(combined_mse_2D, axis=0)
-            np.savetxt("%s/%s_avg.txt" %(dir_solu,metric),avg)
-            np.savetxt("%s/%s_std.txt" %(dir_solu,metric),std)
+            np.savetxt("%s%s_avg.txt" %(dir_solu,metric),avg)
+            np.savetxt("%s%s_std.txt" %(dir_solu,metric),std)
 
     def generate_sensor_maps(self, map_x_scale, map_y_scale, dir_maps, dir_sensor_map, map_num, plotter):
         for i in range(1, map_num+1):
@@ -262,51 +262,51 @@ class Exp2:
         # load real mean of sensors
         real_mean_of_sensors = np.loadtxt(dir_real_mean_of_sensors)
 
-        # Iterate through the files
-        # for sensor_map_file in sensor_maps:
-        #     # Check if the current item is a file
-        #     if os.path.isfile(os.path.join(dir_maps, sensor_map_file)):
-        #         print("File:", sensor_map_file)
-        #
-        #     # load and plot sensor map
-        #     sensor_map = json.load(open(dir_maps+sensor_map_file))
-        #     # load dataset
-        #     name, ext = os.path.splitext(sensor_map_file)
-        #     dataset = np.loadtxt(dir_maps + 'dataset_' + name + '.txt')
-        #
-        #     # Create the directory if it doesn't exist
-        #     map_name, file_extention = os.path.splitext(sensor_map_file)
-        #
-        #     #----------------------------Exp2 my solution ------------------------------------------------------------------
-        #     if not os.path.exists(dir_mysolu+map_name):
-        #         os.makedirs(dir_mysolu+map_name)
-        #         os.chmod(dir_mysolu+map_name, 0o700)
-        #     # create a plotter for exp1
-        #     exp2_my_solu_plotter = plotter.plotter(dir_mysolu+map_name+'/')
-        #
-        #     self.exp_2_my_solution(dir_mysolu+map_name+'/', drone_energy_capacity, step_size,  dataset, sensor_map, hovering_energy_per_unit, flying_energy_per_unit, maximum_num_of_training_data, real_mean_of_sensors, num_of_estimation_data, exp2_my_solu_plotter,size_data_collection,
-        #                             drone_commu_rate,mse_file_name, sensor_length_file_name,uav_speed, uav_unit_time_uav_operation_cost)
-        #
-        #     # # ----------------------------Exp2 Baseline_ML ------------------------------------------------------------------
-        #
-        #     if not os.path.exists(dir_baseline_ml+map_name):
-        #         os.makedirs(dir_baseline_ml+map_name)
-        #         os.chmod(dir_baseline_ml+map_name, 0o700)
-        #     exp2_baseline_ml_plotter = plotter.plotter(dir_baseline_ml+map_name+'/')
-        #     self.exp2_ML_baseline(dir_baseline_ml+map_name+'/', drone_energy_capacity, step_size,  dataset, sensor_map,
-        #                           hovering_energy_per_unit, flying_energy_per_unit, maximum_num_of_training_data, num_of_estimation_data,
-        #                           exp2_baseline_ml_plotter, size_data_collection, drone_commu_rate, mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost)
-        #
-        #     # # ----------------------------Exp2 Baseline_fs ------------------------------------------------------------------
-        #
-        #     if not os.path.exists(dir_baseline_fs+map_name):
-        #         os.makedirs(dir_baseline_fs+map_name)
-        #         os.chmod(dir_baseline_fs+map_name, 0o700)
-        #     exp1_baseline_fs_plotter = plotter.plotter(dir_baseline_fs+map_name+'/')
-        #     self.exp2_FS_baseline(dir_baseline_fs+map_name+'/', drone_energy_capacity, step_size, dataset, sensor_map,
-        #                           hovering_energy_per_unit, flying_energy_per_unit, maximum_num_of_training_data,
-        #                           num_of_estimation_data, exp1_baseline_fs_plotter, size_data_collection, drone_commu_rate,
-        #                           mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost)
+        #Iterate through the files
+        for sensor_map_file in sensor_maps:
+            # Check if the current item is a file
+            if os.path.isfile(os.path.join(dir_maps, sensor_map_file)):
+                print("File:", sensor_map_file)
+
+            # load and plot sensor map
+            sensor_map = json.load(open(dir_maps+sensor_map_file))
+            # load dataset
+            name, ext = os.path.splitext(sensor_map_file)
+            dataset = np.loadtxt(dir_maps + 'dataset_' + name + '.txt')
+
+            # Create the directory if it doesn't exist
+            map_name, file_extention = os.path.splitext(sensor_map_file)
+
+            # #----------------------------Exp2 my solution ------------------------------------------------------------------
+            # if not os.path.exists(dir_mysolu+map_name):
+            #     os.makedirs(dir_mysolu+map_name)
+            #     os.chmod(dir_mysolu+map_name, 0o700)
+            # # create a plotter for exp1
+            # exp2_my_solu_plotter = plotter.plotter(dir_mysolu+map_name+'/')
+            #
+            # self.exp_2_my_solution(dir_mysolu+map_name+'/', drone_energy_capacity, step_size,  dataset, sensor_map, hovering_energy_per_unit, flying_energy_per_unit, maximum_num_of_training_data, real_mean_of_sensors, num_of_estimation_data, exp2_my_solu_plotter,size_data_collection,
+            #                         drone_commu_rate,mse_file_name, sensor_length_file_name,uav_speed, uav_unit_time_uav_operation_cost)
+            #
+            # # # ----------------------------Exp2 Baseline_ML ------------------------------------------------------------------
+            #
+            # if not os.path.exists(dir_baseline_ml+map_name):
+            #     os.makedirs(dir_baseline_ml+map_name)
+            #     os.chmod(dir_baseline_ml+map_name, 0o700)
+            # exp2_baseline_ml_plotter = plotter.plotter(dir_baseline_ml+map_name+'/')
+            # self.exp2_ML_baseline(dir_baseline_ml+map_name+'/', drone_energy_capacity, step_size,  dataset, sensor_map,
+            #                       hovering_energy_per_unit, flying_energy_per_unit, maximum_num_of_training_data, num_of_estimation_data,
+            #                       exp2_baseline_ml_plotter, size_data_collection, drone_commu_rate, mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost)
+            #
+            # # # ----------------------------Exp2 Baseline_fs ------------------------------------------------------------------
+            #
+            # if not os.path.exists(dir_baseline_fs+map_name):
+            #     os.makedirs(dir_baseline_fs+map_name)
+            #     os.chmod(dir_baseline_fs+map_name, 0o700)
+            # exp1_baseline_fs_plotter = plotter.plotter(dir_baseline_fs+map_name+'/')
+            # self.exp2_FS_baseline(dir_baseline_fs+map_name+'/', drone_energy_capacity, step_size, dataset, sensor_map,
+            #                       hovering_energy_per_unit, flying_energy_per_unit, maximum_num_of_training_data,
+            #                       num_of_estimation_data, exp1_baseline_fs_plotter, size_data_collection, drone_commu_rate,
+            #                       mse_file_name, sensor_length_file_name, uav_speed, uav_unit_time_uav_operation_cost)
 
         # after the all the maps are finished, calculate the average mse and std for the final plots
         # average sensors being selected, and average trip length
