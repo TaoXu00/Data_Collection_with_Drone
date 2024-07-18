@@ -38,7 +38,8 @@ class Inference:
         obs_v = cov[np.ix_(obs_var, obs_var)]
         mse_along_time = []
         inferred_all = np.empty((len(unknown_var), 1))
-        for i in np.arange(k, k + num_inference): # for t =i to t=num_inference
+        #for i in np.arange(k, k + num_inference): # for t =i to t=num_inference
+        for i in np.arange(1000, 1000 + num_inference):  # for t =i to t=num_inference
             x = self.Dataset[i]  # real value at time i
             # implement the Guassian conditional probability
             true_value = np.take(x, unknown_var)

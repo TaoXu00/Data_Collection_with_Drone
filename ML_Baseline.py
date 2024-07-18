@@ -240,7 +240,8 @@ class ML_Baseline:
             train_data=pd.DataFrame(data=self.dataset[0:self.num_of_data_for_training,:])
             X_train=train_data.iloc[:,selected_vars]
             Y_train=train_data.drop(selected_vars, axis=1)
-            test_data=pd.DataFrame(data=self.dataset[self.num_of_data_for_training:(self.num_of_data_for_inference+self.num_of_data_for_training),:])
+            # test_data=pd.DataFrame(data=self.dataset[self.num_of_data_for_training:(self.num_of_data_for_inference+self.num_of_data_for_training),:])
+            test_data = pd.DataFrame(data=self.dataset[1000:(self.num_of_data_for_inference + 1000), :])
             X_test=test_data.iloc[:,selected_vars]
             Y_test=test_data.drop(selected_vars, axis=1)
             total_mse_list_for_all_models=self.model_selection(models, X_train, Y_train, X_test, Y_test)

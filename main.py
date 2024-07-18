@@ -11,6 +11,8 @@ import shutil
 import Exp1
 import Exp2
 import Exp4
+import Exp6_CPS_Solar_Data
+import Exp7_CPS_Solar_Data_vary_training_data_size
 class main():
     def __init__(self, dir_plots, dir_dataset, dir_sensor_map):
         self.plotter=plotter.plotter(dir_plots)
@@ -133,12 +135,17 @@ exp2=Exp2.Exp2(config)
 exp3=Exp3_real_dataset.Exp3_real_dataset(config)
 exp4=Exp4.Exp4(config)
 exp5=Exp5_real_data_dataset_varying_the_training_data_size.Exp5_real_data_dataset_varying_the_training_data_size(config)
+exp6=Exp6_CPS_Solar_Data.Exp6_CPS_Solar_Dataset(config)
+exp7=Exp7_CPS_Solar_Data_vary_training_data_size.Exp7(config)
 #system.cleanup(config)
 dir_exp1=config['Dir']['dir_exp1']
 dir_exp2=config['Dir']['dir_exp2']
 dir_exp3=config['Dir']['dir_exp3']
 dir_exp4=config['Dir']['dir_exp4']
 dir_exp5=config['Dir']['dir_exp5']
+dir_exp6=config['Dir']['dir_exp6']
+dir_exp7=config['Dir']['dir_exp7']
+
 exps=config['Run']['experiments'].split(',')
 for exp in exps:
     if exp == 'Exp1':
@@ -151,6 +158,12 @@ for exp in exps:
         exp4.exp_4(dir_exp4)
     if exp== 'Exp5':
         exp5.exp_5(dir_exp5)
+    if exp== 'Exp6':
+        exp6.exp_6(dir_exp6)
+    if exp== 'Exp7':
+        exp7.exp_7(dir_exp7)
+
+
 
 
 

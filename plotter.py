@@ -258,6 +258,92 @@ class plotter:
                     bbox_inches='tight')
         plt.close()
 
+    def plot_MSE_with_all_solutions_exp6(self, drone_energy_capacity_list, avgs):
+        plt.figure()
+        plt.rcParams.update(
+            {'font.size': 20, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
+        plt.grid(True)
+        x = drone_energy_capacity_list
+        xticks = [5,10,15,20,25,30]
+        # yticks = [0, 1, 2, 3, 4]
+        # x = drone_energy_capacity_list
+        keys = list(avgs.keys())
+        # print(avgs.keys())
+        for i in range(len(keys)):
+            for j in range(len(avgs[keys[i]])):
+                avgs[keys[i]][j] = avgs[keys[i]][j] / 10000
+            plt.plot(x, avgs[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i],
+                     linewidth=2, markersize=12)
+        plt.xticks(xticks)
+        # plt.yticks(yticks)
+        plt.ylabel(r'MSE (x$10^4$)')
+        plt.xlabel("Budget ($)")
+        plt.legend(fontsize=20)
+        plt.savefig(self.directory + '%s.png' % ('MSE_exp6'), format="PNG",
+                    bbox_inches='tight')
+
+    def plot_selected_sensors_with_all_solutions_exp6(self, drone_energy_capacity_list, avgs):
+        plt.figure()
+        plt.rcParams.update(
+            {'font.size': 20, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
+        plt.grid(True)
+        x = drone_energy_capacity_list
+        xticks = [5,10, 15, 20, 25,30]
+        keys = list(avgs.keys())
+        for i in range(len(keys)):
+            plt.plot(x, avgs[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i],
+                     linewidth=2, markersize=10)
+        plt.xticks(xticks)
+        plt.xlabel("size of training dataset")
+        plt.ylabel(" # of selected sensors")
+        plt.legend(fontsize=20, loc='upper left')
+        plt.savefig(self.directory + 'num_of_selected_sensors_exp6.png', format="PNG", bbox_inches='tight')
+        plt.close()
+
+
+
+    def plot_MSE_with_all_solutions_exp7(self, training_dataset_size_list, avgs):
+        plt.figure()
+        plt.rcParams.update(
+            {'font.size': 20, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
+        plt.grid(True)
+        x = training_dataset_size_list
+        xticks = [600, 700, 800, 900, 1000]
+        #yticks = [0, 1, 2, 3, 4]
+        # x = drone_energy_capacity_list
+        keys = list(avgs.keys())
+        # print(avgs.keys())
+        for i in range(len(keys)):
+            for j in range(len(avgs[keys[i]])):
+                avgs[keys[i]][j] = avgs[keys[i]][j] / 10000
+            plt.plot(x, avgs[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i],
+                     linewidth=2, markersize=10)
+        plt.xticks(xticks)
+        #plt.yticks(yticks)
+        plt.ylabel('size of training dataset')
+        plt.xlabel("Budget ($)")
+        plt.legend(fontsize=20)
+        plt.savefig(self.directory + '%s.png' % ('MSE_exp7'), format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
+    def plot_selected_sensors_with_all_solutions_exp7(self, training_dataset_size_list, avgs):
+        plt.figure()
+        plt.rcParams.update(
+            {'font.size': 20, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
+        plt.grid(True)
+        x = training_dataset_size_list
+        xticks = [600, 700, 800, 900, 1000]
+        keys = list(avgs.keys())
+        for i in range(len(keys)):
+            plt.plot(x, avgs[keys[i]], label=keys[i], color=self.colors[i], marker=self.markers[i],
+                     linewidth=2, markersize=10)
+        plt.xticks(xticks)
+        plt.xlabel("size of training dataset")
+        plt.ylabel(" # of selected sensors")
+        plt.legend(fontsize=20, loc='upper right')
+        plt.savefig(self.directory + 'num_of_selected_sensors_exp7.png', format="PNG", bbox_inches='tight')
+        plt.close()
 
     def plot_MSE_with_all_solutions(self,drone_energy_capacity_list, avgs, stds):
         plt.figure()

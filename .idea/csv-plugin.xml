@@ -3,6 +3,13 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="/Dataset/CPS_Solar_Radiation_Dataset/21_sensors/CPS_solar_radiation_dataset.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/Dataset/solar_radiation_dataset/correlation_matrix_315.csv">
           <value>
             <Attribute>

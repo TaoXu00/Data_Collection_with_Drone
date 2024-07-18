@@ -206,7 +206,7 @@ class Data_Generator_and_Loader:
 
 
 #
-# Data_Generator_and_Loader= Data_Generator_and_Loader()
+#Data_Generator_and_Loader= Data_Generator_and_Loader()
 # path_map_json= 'Dataset/sensor_maps/map_2.json'
 # #create an synthetic dataset for solar_map
 # #path_map_json='solar_radiation_dataset/sensor_map.json'
@@ -229,6 +229,17 @@ class Data_Generator_and_Loader:
 # # print(cov_matrix)
 # # sample= np.random.multivariate_normal(mean_vector, cov_matrix, 5000)
 # # np.savetxt("Dataset/solar_radiation_dataset/DataMatrix_313_synthetic.txt", sample)
+
+
+
+# cps_sensor_map_json= 'Dataset/CPS_Solar_Radiation_Dataset/CPS_solar_radiation_sensor_map.json'
+# with open(cps_sensor_map_json, 'r') as json_file:
+#     data = json_file.read()
+#     sensor_map = json.loads(data)
+# plotter=plotter.plotter('Dataset/CPS_Solar_Radiation_Dataset')
+# Data_Generator_and_Loader.plot_sensor_graph(sensor_map, plotter, 'Dataset/CPS_Solar_Radiation_Dataset/cps_solar_sensor_map')
+
+
 
 
 

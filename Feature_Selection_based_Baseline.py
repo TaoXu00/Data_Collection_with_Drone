@@ -183,7 +183,8 @@ class Feature_selection_based_baseline:
             train_data = pd.DataFrame(data=self.dataset[0:self.number_of_training_data, :])
             X_train = train_data.iloc[:, selected_vars]
             Y_train = train_data.drop(selected_vars, axis=1)
-            test_data = pd.DataFrame(data=self.dataset[self.number_of_training_data:(self.number_of_training_data+self.num_of_estimation_data), :])
+            #test_data = pd.DataFrame(data=self.dataset[self.number_of_training_data:(self.number_of_training_data+self.num_of_estimation_data), :])
+            test_data = pd.DataFrame(data=self.dataset[1000:(1000 + self.num_of_estimation_data), :])
             X_test = test_data.iloc[:, selected_vars]
             Y_test = test_data.drop(selected_vars, axis=1)
             for key in Y_train.columns.tolist():

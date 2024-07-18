@@ -1,0 +1,36 @@
+Path Plan with different drone capabilities
+***************************************************************
+vars rank : [11, 9, 10, 7, 8, 6, 13, 14, 12, 16, 5, 4, 2, 20, 1, 0, 15, 3, 18, 17, 19]
+drone_budget: 10
+6 sensors are selected 
+optimal tour: ['11', '9', '10', '8', '6', '7', 'Depot']
+length of the tour 629.819836
+optimal cost 7.997998
+***************************************************************
+vars rank : [11, 10, 13, 14, 12, 16, 4, 2, 5, 20, 1, 7, 0, 15, 18, 8, 3, 17, 9, 6, 19]
+drone_budget: 10
+5 sensors are selected 
+optimal tour: ['11', '12', '14', '13', '10', 'Depot']
+length of the tour 764.464662
+optimal cost 9.294052
+***************************************************************
+vars rank : [11, 13, 14, 18, 12, 4, 2, 5, 7, 20, 1, 16, 0, 9, 8, 15, 17, 3, 19, 6, 10]
+drone_budget: 10
+3 sensors are selected 
+optimal tour: ['11', '14', '13', 'Depot']
+length of the tour 763.857810
+optimal cost 8.887309
+***************************************************************
+vars rank : [11, 13, 14, 16, 4, 2, 5, 12, 7, 20, 1, 15, 8, 9, 0, 19, 18, 17, 6, 3, 10]
+drone_budget: 10
+3 sensors are selected 
+optimal tour: ['11', '14', '13', 'Depot']
+length of the tour 763.857810
+optimal cost 8.887309
+***************************************************************
+vars rank : [11, 13, 14, 16, 4, 2, 5, 12, 7, 20, 1, 15, 8, 9, 0, 19, 18, 17, 6, 3, 10]
+drone_budget: 10
+3 sensors are selected 
+optimal tour: ['11', '14', '13', 'Depot']
+length of the tour 763.857810
+optimal cost 8.887309
