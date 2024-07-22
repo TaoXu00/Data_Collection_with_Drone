@@ -68,12 +68,14 @@ def plot_KL_divergence(x, kls_JGD, kls_EXP, kls_uni):
 
 
 #take 500 samples from the dataset DataMatrix_313.txt
-dataset=np.loadtxt("Dataset/solar_radiation_dataset/DataMatrix_313.txt")
-data_selected_rows= dataset[:500, :] #first 500 rows
+#data_path='Dataset/CPS_Solar_Radiation_Dataset/25_sensors/CPS_solar_radiation_dateset.txt'
+data_path='Data_Collection_with_Drone/Dataset/solar_radiation_dataset/DataMatrix_313.txt'
+dataset=np.loadtxt(data_path)
+data_selected_rows= dataset[:1000, :] #first 500 rows
 # [0, 4 , 8, 12, 17]
-data=data_selected_rows[:, [0, 4, 8, 12, 17]]
-#data=data_selected_rows
-num_samples=500
+#data=data_selected_rows[:, [0, 4, 8, 9, 12]]
+data=data_selected_rows
+num_samples=1000
 print("shape of the real dataset:", data.shape)
 np.savetxt("Dataset/Dataset for distribution evaluation/empirical_data.txt", data, delimiter=' ')
 mean_vector=np.mean(data, axis=0)
@@ -117,7 +119,7 @@ dict_kls={}
 kls_JGD = []
 kls_EXP=[]
 kls_uni=[]
-for i in range(2, 6, 1):
+for i in range(2, num_var+1, 1):
     empirical_data=data[:, :i]
     data_JGD=theoretical_JGD[:, :i]
     data_exp=theoretical_exponential[:, :i]
@@ -132,7 +134,7 @@ for i in range(2, 6, 1):
     kls_EXP.append(kl_EXP)
     kl_uni = kl_divergence_multivariate(empirical_data, data_uni)
     kls_uni.append(kl_uni)
-    x=np.arange(2, 6, 1)
+    x=np.arange(2, num_var+1, 1)
 plot_KL_divergence(x, kls_JGD,kls_EXP, kls_uni)
 
 

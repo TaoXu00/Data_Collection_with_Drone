@@ -71,6 +71,7 @@ def generate_sensor_map_of_collected_solar_reidation_sensor(file,output_file):
         with open(output_file, 'w') as json_file:
             json_file.write(json.dumps(map, indent=4))
 
+
 filepath='Dataset/CPS_Solar_Radiation_Dataset/21_sensors/CPS_solar_radiation_sensor_map_21_sensors.txt'
 output_filepath='Dataset/CPS_Solar_Radiation_Dataset/21_sensors/CPS_solar_radiation_sensor_map_21_sensors.json'
 generate_sensor_map_of_collected_solar_reidation_sensor(filepath,output_filepath)
