@@ -166,10 +166,55 @@ class Data_Preprocess():
         #Remove the first row
 
         data.to_csv('Dataset/water_content_2015_Jan_April_32_sensors_real.txt', sep="\t",index=False, header= False)
+    def plot_histogram_of_correlation_matrix(self, file_path):
+        # Read the correlation matrix from a CSV file
+        data=np.loadtxt(file_path)
+        correlation_matrix =np.corrcoef(data, rowvar=False)
+        print(correlation_matrix)
+        print(correlation_matrix.shape)
+        # Extract the diagonal elements
+        upper_diagonal = np.triu(correlation_matrix, k=1)
+        # Get the upper triangular elements as a 1D array
+        upper_triangular_elements = upper_diagonal[upper_diagonal != 0]
+        custom_bins=[0,0.2, 0.4, 0.6, 0.8, 1.0]
+        hist_counts, bin_edges = np.histogram(upper_triangular_elements, bins=custom_bins, density=True)
+
+        # Compute the cumulative sum of the histogram counts
+        cdf = np.cumsum(hist_counts)
+        cdf_normalized = cdf / cdf[-1]
+
+        # # Plot the CDF
+        # #plt.plot(bin_edges[1:], cdf_normalized, marker='.', linestyle='none')
+        # plt.bar(bin_edges[:-1], cdf_normalized, width=np.diff(bin_edges), edgecolor='black', align='edge')
+        # plt.xlabel('Value')
+        # plt.ylabel('CDF')
+        # plt.title('CDF with Custom Bin Edges')
+        # plt.show()
+
+        x = ['(0, 0.2]', '(0.2, 0.4]', '(0.4, 0.6]', '(0.6, 0.8]', '(0.8, 1.0]']
+        x= [0.2, 0.4, 0.6, 0.8, 1.0]
+        y=[0, 0.2, 0.4, 0.6, 0.8, 1]
+        barWidth = 0.25
+        fig = plt.figure()
+        plt.rcParams.update(
+            {'font.size': 25, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
+        bar = np.arange(len(cdf_normalized))
+        #plt.plot(x, cdf_normalized)
+        plt.bar(bar, cdf_normalized,  width=barWidth, linewidth=2)
+        plt.xticks(bar, x)
+        plt.yticks(y)
+        plt.xlabel('Correlation coefficient')
+        plt.ylabel('CDF')
+        plt.savefig("CDF_of_Correlation.png", bbox_inches="tight")
+        plt.close()
+
+
+
 
 dp= Data_Preprocess()
-dp.creat_real_training_dataset()
-
+# dp.creat_real_training_dataset()
+file_path='Dataset/solar_radiation_dataset/DataMatrix_317.txt'
+dp.plot_histogram_of_correlation_matrix(file_path)
 
 
 

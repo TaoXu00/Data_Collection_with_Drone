@@ -36,6 +36,34 @@ class plotter:
         plt.savefig(self.directory + 'num_of_collected_sensors.png', format="PNG", bbox_inches='tight')
         plt.close()
 
+    def plot_distance_vs_MSE_with_CPS_solar_dataset(self, CROP_MSE, CROP_distance, TSP_ML_MSE, TSP_ML_distance, FS_ML_MSE, FS_ML_distance):
+        plt.figure()
+        plt.rcParams.update(
+            {'font.size': 25, 'xtick.labelsize': 'x-large', 'ytick.labelsize': 'x-large', 'axes.titlesize': 'x-large'})
+        plt.grid(True)
+        #x = training_dataset_size_list
+        xticks = [1, 2, 3, 4, 5, 6]
+        yticks = [0, 0.5, 1, 1.5, 2]
+        CROP_MSE=[ i/100000 for i in CROP_MSE]
+        TSP_ML_MSE=[i/100000 for i in TSP_ML_MSE]
+        FS_ML_MSE=[i/100000 for i in FS_ML_MSE]
+        CROP_distance=[i/1000 for i in CROP_distance]
+        FS_ML_distance=[i/1000 for i in FS_ML_distance]
+        TSP_ML_distance=[i/1000 for i in TSP_ML_distance]
+        plt.plot(CROP_MSE, CROP_distance, label='CROP', color=self.colors[0], marker=self.markers[0], linewidth=2,  markersize=12)
+        plt.plot(FS_ML_MSE, FS_ML_distance, label='FS-ML', color=self.colors[1], marker=self.markers[1], linewidth=2,markersize=12)
+        plt.plot(TSP_ML_MSE, TSP_ML_distance, label='TSP-ML', color=self.colors[2], marker=self.markers[2], linewidth=2,  markersize=12)
+
+        plt.xlabel(r'MSE (x$10^5$)')
+        plt.ylabel('Trajectory length (Km)')
+        #plt.ylim(0, 5)
+        plt.xticks(xticks)
+        plt.yticks(yticks)
+        plt.legend(fontsize=20, loc='upper right')
+        plt.savefig(self.directory + 'trajectory length vs MSE.png', format="PNG",
+                    bbox_inches='tight')
+        plt.close()
+
 
 
     def plot_metrics_with_all_solutions_real_dataset(self, metric, drone_energy_capacity_list, avgs):

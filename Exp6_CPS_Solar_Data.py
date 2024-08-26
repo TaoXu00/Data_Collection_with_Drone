@@ -222,10 +222,10 @@ class Exp6_CPS_Solar_Dataset:
 
             sensor_map = json.load(json_file)
 
-        # #----------------------------Exp6 my solution ------------------------------------------------------------------
-        # if not os.path.exists(dir_mysolu):
-        #     os.makedirs(dir_mysolu)
-        #     os.chmod(dir_mysolu, 0o700)
+        #----------------------------Exp6 my solution ------------------------------------------------------------------
+        if not os.path.exists(dir_mysolu):
+            os.makedirs(dir_mysolu)
+            os.chmod(dir_mysolu, 0o700)
         # # create a plotter for exp6
         # exp6_my_solu_plotter = plotter.plotter(dir_mysolu+'/')
         #
@@ -260,26 +260,38 @@ class Exp6_CPS_Solar_Dataset:
         mse_metric= self.config['Exp_6']['mse_matric_name']
         selected_sensor_metric=self.config['Exp_6']['selected_sensor_matric_name']
 
-        #make the final plot of the metric with three solutions
-        matrics = [mse_metric, selected_sensor_metric]
-        drone_energy_capacity_list=np.arange(0, maximum_drone_energy_capacity,step_size)
-        for metric in matrics:
-            avgs={}
-            for dir_solu in dirs_solu:
-                solu_name= dir_solu.split('/')[1]
-                if solu_name == 'mysolu':
-                    solu_name = 'CROP'
-                elif solu_name == 'baseline_ml':
-                    solu_name = 'TSP-ML'
-                elif solu_name == 'baseline_fs':
-                    solu_name = 'FS-ML'
-                if metric==mse_metric:
-                    data=np.loadtxt("%s/mse_varying_drone_capabilities.txt" %(dir_solu))
-                elif metric==selected_sensor_metric:
-                    data=np.loadtxt(("%s/sensor_length.txt" %(dir_solu)))
-                avgs[solu_name]=data
-            if metric== mse_metric:
-                self.plotter.plot_MSE_with_all_solutions_exp6(drone_energy_capacity_list,avgs)
-            else:
-                self.plotter.plot_selected_sensors_with_all_solutions_exp6(drone_energy_capacity_list, avgs)
-        self.plot_sensor_graph(sensor_map, self.plotter, "sensor_map")
+        # #make the final plot of the metric with three solutions
+        # matrics = [mse_metric, selected_sensor_metric]
+        # drone_energy_capacity_list=np.arange(0, maximum_drone_energy_capacity,step_size)
+        # for metric in matrics:
+        #     avgs={}
+        #     for dir_solu in dirs_solu:
+        #         solu_name= dir_solu.split('/')[1]
+        #         if solu_name == 'mysolu':
+        #             solu_name = 'CROP'
+        #         elif solu_name == 'baseline_ml':
+        #             solu_name = 'TSP-ML'
+        #         elif solu_name == 'baseline_fs':
+        #             solu_name = 'FS-ML'
+        #         if metric==mse_metric:
+        #             data=np.loadtxt("%s/mse_varying_drone_capabilities.txt" %(dir_solu))
+        #         elif metric==selected_sensor_metric:
+        #             data=np.loadtxt(("%s/sensor_length.txt" %(dir_solu)))
+        #         avgs[solu_name]=data
+        #     if metric== mse_metric:
+        #         self.plotter.plot_MSE_with_all_solutions_exp6(drone_energy_capacity_list,avgs)
+        #     else:
+        #         self.plotter.plot_selected_sensors_with_all_solutions_exp6(drone_energy_capacity_list, avgs)
+        # self.plot_sensor_graph(sensor_map, self.plotter, "sensor_map")
+
+        CROP_MSE = [0.000000000000000000e+00, 2.008959128361664170e+03, 5.096407300655377185e+04,1.090599846699116752e+05, 1.790599846699116752e+05,3.146113013587468304e+05]
+        CROP_distance=[1933.766504,  1913.948836,  1601.682629, 1000.85781, 763.85781, 198.067116]
+
+        TSP_ML_MSE=[0.000000000000000000e+00,1.900796222796844086e+04,1.367299903137760703e+05,1.633295637356844381e+05,3.992328652074164129e+05,6.264240730386563810e+05]
+        TSP_ML_distance=[1933.766504, 1775.473216, 1401.994436, 1156.929692, 629.819836, 352.490976]
+
+        FS_ML_MSE=[0.000000000000000000e+00,1.303182584370047698e+04,9.220734468122206454e+04,1.667630577051695727e+05,3.377864701635220554e+05 ,4.258084075468619703e+05]
+        FS_ML_distance=[1933.766504, 1905.575979, 1655.998657,  1162.587284, 765.369703, 426.004462]
+
+        self.plotter.plot_distance_vs_MSE_with_CPS_solar_dataset(CROP_MSE, CROP_distance, TSP_ML_MSE, TSP_ML_distance,
+                                                                 FS_ML_MSE, FS_ML_distance)

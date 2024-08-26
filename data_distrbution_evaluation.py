@@ -55,27 +55,33 @@ def plot_KL_divergence(x, kls_JGD, kls_EXP, kls_uni):
     linestyles = ['dotted', 'dashed', 'dashdot', (0, (3, 5, 1, 5, 1, 5)), 'solid', '--', 'dotted']
     markers = ["s", "^", "*", "p", "X"]
     plt.grid(True)
-
-    plt.plot(x, kls_JGD, label='JDG', color=colors[0], marker=markers[0], linestyle= linestyles[0], linewidth=2)
-    plt.plot(x, kls_EXP, label='Exponential', color=colors[1], marker=markers[1], linestyle= linestyles[1],linewidth=2)
-    plt.plot(x, kls_uni, label='Uniform', color=colors[2], marker=markers[2], linestyle= linestyles[2],linewidth=2)
+    x=[1, 2, 3, 4, 5]
+    yticks=[2, 4, 6, 8, 10]
+    kls_JGD=[0.408250201, 0.410761685, 0.442558813, 0.443480764, 0.463652796]
+    kls_EXP=[2.037165347, 5.298643387, 7.010969475, 8.025435553, 9.049510114 ]
+    kls_uni=[1.143445049, 3.092326738, 4.750767361, 5.971547847, 6.65799991]
+    plt.plot(x, kls_JGD, label='JDG', color=colors[0], marker=markers[0], markersize=12, linewidth=2)
+    plt.plot(x, kls_EXP, label='Exponential', color=colors[1], marker=markers[1], markersize=12, linewidth=2)
+    plt.plot(x, kls_uni, label='Uniform', color=colors[2], marker=markers[2], markersize=12,linewidth=2)
+    plt.xticks(x)
+    plt.yticks(yticks)
     plt.xlabel("# of sensors")
     plt.ylabel(" KL Divergence")
-    plt.legend(fontsize=20, loc='upper right')
-    plt.savefig('KL Divergence of different distribution.png', format="PNG",
+    plt.legend(fontsize=20, loc='upper left')
+    plt.savefig('KL Divergence of different distribution_solar_radiation.png', format="PNG",
                 bbox_inches='tight')
     plt.close()
 
 
 #take 500 samples from the dataset DataMatrix_313.txt
-#data_path='Dataset/CPS_Solar_Radiation_Dataset/25_sensors/CPS_solar_radiation_dateset.txt'
-data_path='Data_Collection_with_Drone/Dataset/solar_radiation_dataset/DataMatrix_313.txt'
+data_path='Dataset/solar_radiation_dataset/DataMatrix_316_real.txt'
+#data_path='Dataset/solar_radiation_dataset/synthetic_dataset_solar_radiation.txt'
 dataset=np.loadtxt(data_path)
-data_selected_rows= dataset[:1000, :] #first 500 rows
+data_selected_rows= dataset[:500, :] #first 500 rows
 # [0, 4 , 8, 12, 17]
-#data=data_selected_rows[:, [0, 4, 8, 9, 12]]
-data=data_selected_rows
-num_samples=1000
+data=data_selected_rows[:, [0, 4, 8, 9, 12]]
+#data=data_selected_rows
+num_samples=500
 print("shape of the real dataset:", data.shape)
 np.savetxt("Dataset/Dataset for distribution evaluation/empirical_data.txt", data, delimiter=' ')
 mean_vector=np.mean(data, axis=0)
@@ -87,9 +93,6 @@ highs=np.max(data, axis=0) # Upper bounds of the uniform distributions for each 
 # print(highs)
 num_var=len(mean_vector)
 
-# print(mean_vector)
-# print(cov)
-# print(corr_matrix)
 
 #generate the theoretical distribution of JGD
 corr_matrix=np.corrcoef(data.T)
